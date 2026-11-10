@@ -108,6 +108,15 @@ If a write to the database is refused, `goLocalAfterRefusal()` copies the in-mem
 between any of these as JSON (`{ app, version, flips, usage }`, the same shape as
 `example-data.json`).
 
+## Ranks and the "what's next" line
+
+`RANKS` (in `index.html`) is the bird ladder, keyed on money **received** (paid bonuses only).
+`rankFor()` picks the rank; a rise since the last visit (stored in `localStorage` under
+`flip-my-bird.v1.rank`) shows a toast and confetti. `nextStep()` builds the one-line suggestion at
+the top of the page in priority order: overdue bonus, no current deal, free to flip, two weeks out,
+a bonus still "pending", otherwise "sit tight". The mascot's mood follows the countdown
+(asleep, awake under two weeks, flying when free).
+
 ## Screens
 
 - **Overview** (`#overview`): savings totals, a monthly bar chart stacked by bonus type

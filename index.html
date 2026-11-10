@@ -215,6 +215,54 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   .big-count .n { font-size: 48px; }
 }
 @media (prefers-reduced-motion: no-preference) { .track > i { transition: width .6s ease; } }
+
+/* The nest: bird rank, mascot, hero countdown, what's next */
+.nest { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: grid; gap: 16px; position: relative; overflow: hidden; }
+.nest .top-row { display: flex; gap: 16px; align-items: center; }
+.mascot { width: 96px; height: 96px; flex: none; }
+.mascot svg { width: 100%; height: 100%; overflow: visible; }
+.nest .hero-n { font: 800 64px/0.9 var(--display); letter-spacing: -0.04em; }
+.nest .hero-u { font-size: 15px; color: var(--muted); margin-top: 6px; text-wrap: balance; }
+.nest .hero-u strong { color: var(--ink); }
+.next { display: flex; gap: 10px; align-items: flex-start; background: var(--accent-soft); border-radius: 14px; padding: 12px 14px; font-size: 14px; }
+.next .arrow { font-weight: 800; color: var(--accent); flex: none; }
+.next .txt { flex: 1; min-width: 0; }
+.next .txt a, .next .txt button.ghost { padding: 0; font-size: 14px; }
+.rank { display: grid; grid-template-columns: auto 1fr; gap: 12px 14px; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
+.medal { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font: 800 18px var(--display); color: #fff; text-shadow: 0 1px 2px rgb(0 0 0 / .35); box-shadow: inset 0 -3px 6px rgb(0 0 0 / .18), inset 0 2px 4px rgb(255 255 255 / .35); }
+.tier-0 { background: linear-gradient(145deg, #b9c0c6, #8d969d); }
+.tier-1 { background: linear-gradient(145deg, #c98b5e, #8d5a34); }
+.tier-2 { background: linear-gradient(145deg, #c7ccd2, #8e979f); }
+.tier-3 { background: linear-gradient(145deg, #f2c14e, #c48a0a); }
+.tier-4 { background: linear-gradient(145deg, #e9eef3, #9fb1c0); }
+.tier-5 { background: linear-gradient(135deg, #ff8a5b, #e8457a 45%, #7b5cff 80%, #35c3ff); }
+.rank .name { font: 800 20px/1.1 var(--display); }
+.rank .lore { font-size: 13px; color: var(--muted); }
+.rank .to-next { grid-column: 1 / -1; display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+.rank .to-next .track > i { background: linear-gradient(90deg, var(--accent), #ffb347); }
+.rank .to-next .ends { font-size: 12px; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 14px 18px; border-radius: 16px; font-size: 15px; z-index: 50; max-width: calc(100vw - 32px); text-align: center; box-shadow: 0 10px 30px rgb(0 0 0 / .25); }
+.toast strong { font-family: var(--display); }
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 49; }
+.ladder { display: grid; gap: 6px; }
+.ladder .row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.ladder .row.got { color: var(--ink); } .ladder .row:not(.got) { color: var(--muted); }
+.ladder .medal { width: 26px; height: 26px; font-size: 11px; }
+.ladder .amt { margin-left: auto; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: no-preference) {
+  .mascot .zz { animation: zz 2.4s ease-in-out infinite; }
+  .mascot .zz:nth-child(2) { animation-delay: .8s; } .mascot .zz:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes zz { 0% { opacity: 0; transform: translate(0, 0) } 30% { opacity: 1 } 100% { opacity: 0; transform: translate(6px, -14px) } }
+  .mascot.awake .crest { transform-origin: 20px 12px; animation: crest 1.6s ease-in-out infinite alternate; }
+  @keyframes crest { from { transform: rotate(-6deg) } to { transform: rotate(10deg) } }
+  .mascot.fly { animation: fly 1.8s ease-in-out infinite alternate; }
+  @keyframes fly { from { transform: translateY(2px) rotate(-4deg) } to { transform: translateY(-6px) rotate(4deg) } }
+  .mascot.fly .wing { transform-origin: 18px 22px; animation: flap .5s ease-in-out infinite alternate; }
+  @keyframes flap { from { transform: rotate(-18deg) } to { transform: rotate(14deg) } }
+  .toast { animation: toast-in .35s ease-out; }
+  @keyframes toast-in { from { transform: translate(-50%, 20px); opacity: 0 } to { transform: translate(-50%, 0); opacity: 1 } }
+}
+@media (max-width: 460px) { .nest .hero-n { font-size: 52px; } .mascot { width: 80px; height: 80px; } }
 </style>
 
 <div class="wrap">
@@ -240,16 +288,18 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   <nav class="tabs" aria-label="Views"><a href="#overview" id="tab-overview">Overview</a><a href="#details" id="tab-details">Details</a></nav>
 
   <div class="view" id="view-overview">
+  <section class="sec" aria-label="Your nest">
+    <div class="nest" id="nest"></div>
+  </section>
+
   <section class="sec" aria-labelledby="sav-h">
     <h2 id="sav-h">Flip savings</h2>
     <div class="saver">
-      <div class="hero">
-        <div><div class="k">Received so far</div><div class="v" id="sv-recv">$0</div></div>
-        <div class="stats">
-          <div class="stat"><span class="k note">On the way</span><span class="v2" id="sv-owed">$0</span></div>
-          <div class="stat"><span class="k note">Planned</span><span class="v2" id="sv-plan">$0</span></div>
-          <div class="stat"><span class="k note">All up</span><span class="v2" id="sv-total">$0</span></div>
-        </div>
+      <div class="stats">
+        <div class="stat"><span class="k note">Received</span><span class="v2" id="sv-recv">$0</span></div>
+        <div class="stat"><span class="k note">On the way</span><span class="v2" id="sv-owed">$0</span></div>
+        <div class="stat"><span class="k note">Planned</span><span class="v2" id="sv-plan">$0</span></div>
+        <div class="stat"><span class="k note">All up</span><span class="v2" id="sv-total">$0</span></div>
       </div>
       <div class="legend" aria-hidden="true">
         <span class="key"><i style="background:var(--t-retailer)"></i>Retailer</span>
@@ -264,7 +314,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   </section>
 
   <section class="sec" id="now-sec">
-    <h2>Right now</h2>
+    <h2>Your current deal</h2>
     <div id="now"></div>
   </section>
 
@@ -319,6 +369,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   </div>
 </div>
 
+<canvas id="confetti" hidden></canvas>
 <dialog id="dlg">
   <form class="sheet" id="form" novalidate>
     <h3 id="form-title">Add a deal</h3>
@@ -592,7 +643,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   //  - everyone else (outside visitors, or saving refused): this browser
   const LOCAL_ONLY = LS_KEY + ".local";
   function useLocal(reason) {
-    store = localStore();
+    store = localStore(); dataReady = true;
     setSync("Saved on this device only");
     $("#backup-note").textContent = reason || "Your deals are saved in this browser only. Download a backup now and then so you don't lose them.";
     fillUsage();
@@ -634,7 +685,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     let timer = setTimeout(() => setSync("Can't reach your saved deals yet…"), 10000);
     unsubs.push(col.onSnapshot((snap) => {
       flips = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-      if (!snap.metadata.fromCache) { clearTimeout(timer); setSync(owner ? "Saved to your account" : "Saved to your account, private to you"); $("#backup-note").textContent = "Your deals save to your account automatically. Nobody else can see them. You can also keep a copy."; }
+      if (!snap.metadata.fromCache) { dataReady = true; clearTimeout(timer); setSync(owner ? "Saved to your account" : "Saved to your account, private to you"); $("#backup-note").textContent = "Your deals save to your account automatically. Nobody else can see them. You can also keep a copy."; }
       render();
     }, (e) => { clearTimeout(timer); setSync(e.code === "revoked" ? "Saving is off for this view" : "Couldn't load saved deals"); }));
     // A refused write means this viewer can't save here: move to browser storage and keep going.
@@ -663,6 +714,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     fillUsage();
     const live = all.filter(isLive), ideas = all.filter(f => f.considering);
     renderSavings(all);
+    renderNest(all, live, ideas);
     renderNow(live);
     renderIdeas(ideas, live);
     renderMoney(live);
@@ -708,9 +760,6 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
       const pct = Math.round((gone / total) * 100);
       const pill = done ? `<span class="pill ok">Free to flip</span>`
         : left <= 14 ? `<span class="pill wait">Nearly there</span>` : `<span class="pill dim">Staying put</span>`;
-      const count = done
-        ? `<div class="big-count"><span class="n">Go</span><span class="u">Every stay rule finished by ${esc(fmt(free))}. Time to find the next bonus.</span></div>`
-        : `<div class="big-count"><span class="n num">${left}</span><span class="u">${left === 1 ? "day" : "days"} until you can flip, on <strong>${esc(fmt(free))}</strong></span></div>`;
       const pend = (f.bonuses || []).filter(b => b.status !== "paid").reduce((s, b) => s + Number(b.amount || 0), 0);
       return `<div class="deal">
         <div class="row1">
@@ -721,7 +770,6 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
           ${pill}
         </div>
         ${bonusChips(f)}
-        ${count}
         <div><div class="track ${done ? "done" : ""}"><i style="width:${pct}%"></i></div>
           <div class="ends"><span>${esc(fmt(start))}</span><span>${esc(fmt(free))}</span></div></div>
         <div class="summary">${hasRates(f.rates) ? `About <strong>${m2(dailyCost(f.rates, use()).total)}</strong> a day · ` : ""}${stayRules(f).length} stay rule${stayRules(f).length > 1 ? "s" : ""}, ${stayRules(f).filter(r => r.date <= t).length} done</div>
@@ -926,6 +974,123 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   let tipTimer = 0, tipHide = () => {};
   document.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" && !e.target.closest("#chart")) tipHide(); });
   let rsz; window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(drawChart, 150); });
+
+  // ---------- the nest: bird ranks, mascot, what's next ----------
+  // Rank is earned on money actually received. Tier = medal colour.
+  const RANKS = [
+    { at: 0,     name: "Egg",         tier: 0, lore: "Not hatched yet. Your first bonus cracks the shell." },
+    { at: 10,    name: "Dodo",        tier: 1, lore: "Extinct, but you're just getting started." },
+    { at: 150,   name: "Moa",         tier: 1, lore: "Three metres tall and finally off the ground." },
+    { at: 400,   name: "Thunderbird", tier: 2, lore: "Where you flap, the power companies hear thunder." },
+    { at: 800,   name: "Roc",         tier: 2, lore: "Big enough to carry off an elephant, or a quarterly bill." },
+    { at: 1500,  name: "Firebird",    tier: 3, lore: "Glows in the dark. Pays its own supply charge." },
+    { at: 2500,  name: "Simurgh",     tier: 3, lore: "Has seen the world end three times. Still gets the bonus." },
+    { at: 4000,  name: "Garuda",      tier: 4, lore: "Rides the wind. Retailers can't keep up." },
+    { at: 6000,  name: "Griffin",     tier: 4, lore: "Guards the hoard. The hoard is yours." },
+    { at: 10000, name: "Phoenix",     tier: 5, lore: "Reborn with every flip. There is no higher bird." },
+  ];
+  const rankFor = (recv) => { let i = 0; RANKS.forEach((r, k) => { if (recv >= r.at) i = k; }); return i; };
+  const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"][n] || n;
+
+  // Plain-English dates for the hero.
+  function rel(d) {
+    const n = daysBetween(today(), d);
+    if (n === 0) return "today"; if (n === 1) return "tomorrow"; if (n === -1) return "yesterday";
+    if (n > 1 && n < 14) return `in ${n} days`; if (n < -1 && n > -14) return `${-n} days ago`;
+    const w = Math.round(Math.abs(n) / 7);
+    if (Math.abs(n) < 60) return n > 0 ? `in ${w} weeks` : `${w} weeks ago`;
+    return (n > 0 ? "on " : "back on ") + fmt(d);
+  }
+
+  function mascot(mood) {
+    const eye = mood === "sleep" ? `<path d="M23.5 17.5h3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>` : `<circle cx="25" cy="17" r="1.8" fill="var(--accent)"/>`;
+    const wing = mood === "fly"
+      ? `<path class="wing" d="M18 22c-6-6-14-8-17-6 5 1 9 5 11 10z" fill="var(--accent-ink)" opacity=".85"/>`
+      : `<path class="wing" d="M16 24c-3 1-5 4-5 7 3-1 6-3 8-6z" fill="var(--accent-ink)" opacity=".6"/>`;
+    const zz = mood === "sleep" ? `<g font-family="var(--display)" font-weight="800" fill="var(--muted)"><text class="zz" x="31" y="8" font-size="7">z</text><text class="zz" x="34" y="6" font-size="8">z</text><text class="zz" x="37" y="4" font-size="9">z</text></g>` : "";
+    return `<div class="mascot ${mood === "sleep" ? "sleep" : mood === "fly" ? "fly" : "awake"}" aria-hidden="true"><svg viewBox="-2 -2 46 46">
+      <circle cx="20" cy="20" r="19" fill="var(--accent)"/>
+      <path d="M11 24c2-7 8-11 15-10l4-3-1 5c2 2 2 5 0 7-3 3-9 4-14 3l-5 3 1-5z" fill="var(--accent-ink)"/>
+      ${wing}${eye}
+      <g class="crest"><path d="M8 13a9 9 0 0 1 9-6" stroke="var(--accent-ink)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M17 4l1 3-3 1" stroke="var(--accent-ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+      ${zz}</svg></div>`;
+  }
+
+  function nextStep(live, ideas) {
+    const t = today();
+    const current = live.filter(isCurrent);
+    if (!live.length && !ideas.length) return { txt: `Add the energy company you're with now and the bonuses you're chasing.`, act: `<button class="ghost" data-act="add">Add my current deal</button>` };
+    // Overdue money first.
+    for (const f of live) for (const b of (f.bonuses || [])) {
+      if (b.status === "paid" || !Number(b.amount)) continue;
+      const due = Number(b.stayDays) > 0 ? addDays(parse(f.start), b.stayDays) : addMonths(parse(f.start), f.stayMonths || 0);
+      if (daysBetween(due, t) > 14) return { txt: `<strong>${money(b.amount)}</strong> from ${esc(bonusLabel(b))} for ${esc(f.retailer)} was due ${esc(rel(due))}. Chase it, then tap Paid.`, act: `<a href="#details">Go to bonuses</a>` };
+    }
+    if (!current.length) return { txt: `Your last deal has ended. Who are you with now?`, act: `<button class="ghost" data-act="add">Add current deal</button>` };
+    const f = current[0], free = freeDate(f), left = daysBetween(t, free);
+    const idea = ideas.find(i => fuelsOverlap(i.fuel, f.fuel));
+    if (left <= 0) {
+      if (idea) return { txt: `You're free. <strong>${esc(idea.retailer)}</strong> is waiting in your list. Sign up, then tap "I've switched to this".`, act: "" };
+      return { txt: `Your stay's over. Find the next bonus and add it to compare.`, act: `<button class="ghost" data-act="consider">Add a deal to compare</button>` };
+    }
+    if (left <= 14) return { txt: `<strong>${left} days</strong> to go. Start looking at offers now, so you can flip the day you're free.`, act: idea ? "" : `<button class="ghost" data-act="consider">Add a deal to compare</button>` };
+    const unknown = (f.bonuses || []).filter(b => Number(b.amount) > 0 && b.status === "pending");
+    if (unknown.length) return { txt: `Nothing to flip yet. Check the <strong>${esc(bonusLabel(unknown[0]))}</strong> bonus is tracking, then set it to Tracked.`, act: `<button class="ghost" data-act="edit" data-id="${esc(f.id)}">Edit deal</button>` };
+    return { txt: `Nothing to do. Sit tight until ${esc(rel(free))}.`, act: "" };
+  }
+
+  let lastRank = null, dataReady = false;  // don't judge rank until real data has loaded
+  function renderNest(all, live, ideas) {
+    const ev = bonusEvents(all);
+    const recv = ev.filter(e => e.kind === "recv").reduce((s, e) => s + e.amount, 0);
+    const ri = rankFor(recv), r = RANKS[ri], nx = RANKS[ri + 1];
+    const current = live.filter(isCurrent);
+    let mood = "awake", heroN = "", heroU = "";
+    if (current.length) {
+      const f = current[0], free = freeDate(f), left = daysBetween(today(), free);
+      if (left <= 0) { mood = "fly"; heroN = "Flip!"; heroU = `Free to leave <strong>${esc(f.retailer)}</strong> since ${esc(rel(free))}.`; }
+      else { mood = left <= 14 ? "awake" : "sleep"; heroN = `<span class="num">${left}</span>`; heroU = `${left === 1 ? "day" : "days"} until you can flip <strong>${esc(f.retailer)}</strong>, ${esc(rel(free))}.`; }
+    } else { heroN = all.length ? "?" : "Hi"; heroU = all.length ? "No current deal tracked." : "Flip My Bird tracks your energy switches and the bonuses they earn."; }
+    const step = nextStep(live, ideas);
+    const span = nx ? nx.at - r.at : 1, got = nx ? Math.min(span, recv - r.at) : span;
+    $("#nest").innerHTML = `
+      <div class="top-row">${mascot(mood)}<div style="min-width:0"><div class="hero-n">${heroN}</div><div class="hero-u">${heroU}</div></div></div>
+      <div class="next"><span class="arrow">→</span><div class="txt">${step.txt}${step.act ? ` ${step.act}` : ""}</div></div>
+      <div class="rank">
+        <div class="medal tier-${r.tier}" title="Rank ${roman(ri)}">${roman(ri)}</div>
+        <div><div class="name">${esc(r.name)}</div><div class="lore">${esc(r.lore)}</div></div>
+        <div class="to-next">${nx
+          ? `<div class="track"><i style="width:${Math.round(got / span * 100)}%"></i></div><div class="ends"><span>${money(recv)} received</span><span>${money(nx.at - recv)} more to hatch a <strong>${esc(nx.name)}</strong></span></div>`
+          : `<div class="ends"><span>${money(recv)} received</span><span>Top of the ladder.</span></div>`}
+          <details class="more"><summary>See all the birds</summary><div class="ladder">${RANKS.map((k, i) => `<div class="row ${i <= ri ? "got" : ""}"><span class="medal tier-${k.tier}">${roman(i)}</span>${esc(k.name)}${i === ri ? " · you" : ""}<span class="amt">${money(k.at)}</span></div>`).join("")}</div></details>
+        </div>
+      </div>`;
+    // Rank-up: celebrate when the rank rises during this visit or since last visit.
+    if (!example && dataReady) {
+      let stored = null; try { stored = JSON.parse(localStorage.getItem(LS_KEY + ".rank")); } catch {}
+      const prev = lastRank !== null ? lastRank : stored;
+      if (prev !== null && ri > prev) celebrate(`You've hatched into a <strong>${esc(r.name)}</strong>!`, `${money(recv)} received. ${esc(r.lore)}`);
+      lastRank = ri; try { localStorage.setItem(LS_KEY + ".rank", JSON.stringify(ri)); } catch {}
+    }
+  }
+
+  function celebrate(title, sub) {
+    document.querySelectorAll(".toast").forEach(t => t.remove());
+    const t = document.createElement("div"); t.className = "toast"; t.innerHTML = `<strong>${title}</strong><br><span class="note" style="color:inherit;opacity:.8">${sub}</span>`;
+    document.body.appendChild(t); setTimeout(() => t.remove(), 6000);
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const c = $("#confetti"), ctx = c.getContext("2d");
+    c.width = innerWidth; c.height = innerHeight; c.hidden = false;
+    const cols = ["#d2466b", "#2a78d6", "#d98a00", "#1f7a4d", "#ffb347"];
+    const ps = Array.from({ length: 90 }, () => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * 0.5, vx: (Math.random() - .5) * 2, vy: 2 + Math.random() * 3, r: 4 + Math.random() * 5, a: Math.random() * 6, col: cols[Math.floor(Math.random() * cols.length)] }));
+    const t0 = performance.now();
+    (function frame(now) {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const p of ps) { p.x += p.vx; p.y += p.vy; p.a += .1; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.col; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+      if (now - t0 < 2600) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, c.width, c.height); c.hidden = true; }
+    })(t0);
+  }
 
   // ---------- views ----------
   function route() {

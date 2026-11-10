@@ -39,3 +39,9 @@ To try it, open **Details → Backup → Restore**, then **Load the example file
 and press **Restore**. The example deals all have ids starting `example-`, so they're easy to spot
 and delete from **Every flip**. For a look without saving anything, use **Show me an example** on
 an empty app.
+
+## Birds
+
+Money you've actually received hatches you up a ladder of legendary birds, from the Dodo ($10)
+through the Moa, Thunderbird, Roc, Firebird, Simurgh, Garuda and Griffin to the Phoenix ($10,000).
+The front page shows your bird, how far to the next one, and a one-line "what to do next".
