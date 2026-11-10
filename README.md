@@ -42,6 +42,6 @@ an empty app.
 
 ## Birds
 
-Money you've actually received hatches you up a ladder of legendary birds, from the Dodo ($10)
-through the Moa, Thunderbird, Roc, Firebird, Simurgh, Garuda and Griffin to the Phoenix ($10,000).
+Money you've actually received hatches you up a ladder of legendary birds, from the Bin Chicken ($10)
+through the Dodo, Moa, Thunderbird, Roc, Firebird, Simurgh, Garuda and Griffin to the Phoenix ($10,000).
 The front page shows your bird, how far to the next one, and a one-line "what to do next".

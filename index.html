@@ -979,7 +979,8 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   // Rank is earned on money actually received. Tier = medal colour.
   const RANKS = [
     { at: 0,     name: "Egg",         tier: 0, lore: "Not hatched yet. Your first bonus cracks the shell." },
-    { at: 10,    name: "Dodo",        tier: 1, lore: "Extinct, but you're just getting started." },
+    { at: 10,    name: "Bin Chicken", tier: 1, lore: "Sacred in Egypt, scrounging in Sydney. Every bonus starts somewhere." },
+    { at: 75,    name: "Dodo",        tier: 1, lore: "Extinct, but you're just getting started." },
     { at: 150,   name: "Moa",         tier: 1, lore: "Three metres tall and finally off the ground." },
     { at: 400,   name: "Thunderbird", tier: 2, lore: "Where you flap, the power companies hear thunder." },
     { at: 800,   name: "Roc",         tier: 2, lore: "Big enough to carry off an elephant, or a quarterly bill." },
@@ -990,7 +991,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     { at: 10000, name: "Phoenix",     tier: 5, lore: "Reborn with every flip. There is no higher bird." },
   ];
   const rankFor = (recv) => { let i = 0; RANKS.forEach((r, k) => { if (recv >= r.at) i = k; }); return i; };
-  const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"][n] || n;
+  const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][n] || n;
 
   // Plain-English dates for the hero.
   function rel(d) {
