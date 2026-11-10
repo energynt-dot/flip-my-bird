@@ -222,6 +222,18 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
 }
 @media (prefers-reduced-motion: no-preference) { .track > i { transition: width .6s ease; } }
 
+/* About */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; }
+.prose { display: grid; gap: 10px; font-size: 15px; line-height: 1.55; }
+.prose h3 { font: 800 20px/1.2 var(--display); margin: 6px 0 0; }
+.prose h3:first-child { margin-top: 0; }
+.prose p { margin: 0; max-width: 62ch; }
+.prose ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.prose ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.prose .chip { margin-right: 6px; font-weight: 600; }
+#about-birds .row:not(.got) .mini { filter: none; opacity: 1; }
+#about-birds .row:not(.got) { color: var(--ink); }
+
 /* ---- Screen sizes ---- */
 /* Nothing may push the page wider than the screen: wide things scroll inside their own box. */
 .wrap :where(section, div, details, header, nav, form) { min-width: 0; }
@@ -241,7 +253,7 @@ details.more > summary { padding: 8px 0; min-height: 36px; display: flex; align-
   .sync { font-size: 11px; }
   .grid3 { grid-template-columns: 1fr; }
   .bonus-row { grid-template-columns: 1fr; } .bonus-row > * { grid-column: 1 / -1 !important; }
-  .ladder .lr { display: none; }
+  .ladder:not(#about-birds) .lr { display: none; }
   form.sheet { padding: 14px; }
 }
 /* Tablets and desktops: two columns. */
@@ -330,7 +342,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     <button class="small" id="exit-example">Back to my deals</button>
   </div>
 
-  <nav class="tabs" aria-label="Views"><a href="#overview" id="tab-overview">Overview</a><a href="#details" id="tab-details">Details</a></nav>
+  <nav class="tabs" aria-label="Views"><a href="#overview" id="tab-overview">Overview</a><a href="#details" id="tab-details">Details</a><a href="#about" id="tab-about">About</a></nav>
 
   <div class="view" id="view-overview">
   <section class="sec" aria-label="Your nest">
@@ -409,6 +421,72 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
       <button class="small" id="dl-backup">Download backup</button>
       <button class="small" id="copy-backup">Copy backup</button>
       <button class="small" id="restore-open">Restore</button>
+    </div>
+  </section>
+  </div>
+
+  <div class="view about" id="view-about" hidden>
+  <section class="sec">
+    <h2>For bird brains</h2>
+    <div class="card prose">
+      <h3>What is this?</h3>
+      <p>Energy companies pay you to sign up, then quietly charge loyal customers more. Flip My Bird helps you do the opposite: switch every few months, pocket the bonus, and never lose track of where you're up to.</p>
+      <h3>How to flip, in five steps</h3>
+      <ol>
+        <li><strong>Find a deal.</strong> Look for a sign-up bonus, ideally through a cashback site.</li>
+        <li><strong>Add it here.</strong> Put in the company, the day you were connected, and the bonuses.</li>
+        <li><strong>Sit tight.</strong> Each bonus makes you stay a while. The big number counts down to the day you're free.</li>
+        <li><strong>Chase the money.</strong> Tap <em>Paid</em> when a bonus lands. If one's late, the app tells you to go squawk at them.</li>
+        <li><strong>Flip.</strong> When the bird flies, pick the next deal and tap <em>I've flipped</em>. Repeat.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>The three bonuses</h2>
+    <div class="card prose">
+      <p>Check for all three on every flip. They stack more often than you'd think.</p>
+      <ul class="plain">
+        <li><span class="chip"><i style="background:var(--t-retailer)"></i>Retailer bonus</span> A credit from the energy company itself for signing up.</li>
+        <li><span class="chip"><i style="background:var(--t-econnex)"></i>Econnex</span> A reward for switching through the Econnex comparison site.</li>
+        <li><span class="chip"><i style="background:var(--t-cashback)"></i>Cashback site</span> Money from ShopBack, TopCashback or Cashrewards. They often send you through Econnex, but the cashback site is the one that pays, and it often pays more.</li>
+      </ul>
+      <p>Each bonus has its own rule for how long you must stay. The app waits for whichever ends last, so you don't have to work it out.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Words that trip people up</h2>
+    <div class="card prose">
+      <ul class="plain">
+        <li><strong>Stay rule.</strong> How long you must stay to keep a bonus. Leave early and you may lose it.</li>
+        <li><strong>Can't come back for.</strong> After you leave, how long before that company treats you as a new customer again. Often 12 months.</li>
+        <li><strong>Tracked.</strong> The cashback site has seen your sign-up. Not paid yet.</li>
+        <li><strong>Supply charge.</strong> What you pay per day just to be connected. With solar, it's most of your bill.</li>
+        <li><strong>Feed-in.</strong> What they pay you for the solar you send out.</li>
+        <li><strong>Considering.</strong> A deal you're thinking about. It doesn't count until you switch.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>The birds</h2>
+    <div class="card prose">
+      <p>Every dollar you've actually received hatches you up the ladder. Your bird sleeps while you wait, wakes when you're two weeks out, and flies when you're free to flip.</p>
+      <div class="ladder" id="about-birds"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>The fine print</h2>
+    <div class="card prose">
+      <ul class="plain">
+        <li><strong>Your deals are yours.</strong> They're saved to your own account or your own phone. Nobody else can see them. Use <a href="#details">Backup</a> now and then.</li>
+        <li><strong>Check the terms yourself.</strong> Offers change, and each one has its own rules. The app only knows what you type in.</li>
+        <li><strong>Estimates are estimates.</strong> Cost figures come from the rates and usage you enter. Your bill is the real answer.</li>
+        <li><strong>Not financial advice.</strong> Just a bird with a spreadsheet. Flip My Bird isn't connected to any energy company or cashback site.</li>
+      </ul>
+      <p class="note">Loyalty is for galahs.</p>
     </div>
   </section>
   </div>
@@ -1184,6 +1262,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
           <details class="more"><summary>See all the birds</summary><div class="ladder">${RANKS.map((k, i) => `<div class="row ${i <= ri ? "got" : ""} ${i === ri ? "me" : ""}"><span class="mini">${bird("awake", k.kind)}</span><span class="nm"><strong>${esc(k.name)}</strong>${i === ri ? " · you" : ""}<br><span class="lr">${i <= ri ? esc(k.lore) : "Not hatched yet"}</span></span><span class="amt">${money(k.at)}</span></div>`).join("")}</div></details>
         </div>
       </div>`;
+    $("#about-birds").innerHTML = RANKS.map((k, i) => `<div class="row ${i <= ri ? "got" : ""} ${i === ri ? "me" : ""}"><span class="mini">${bird("awake", k.kind)}</span><span class="nm"><strong>${esc(k.name)}</strong>${i === ri ? " · you" : ""}<br><span class="lr">${esc(k.lore)}</span></span><span class="amt">${money(k.at)}</span></div>`).join("");
     // Rank-up: celebrate when the rank rises during this visit or since last visit.
     if (!example && dataReady) {
       let stored = null; try { stored = JSON.parse(localStorage.getItem(LS_KEY + ".rankAt")); } catch {}
@@ -1212,11 +1291,12 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
 
   // ---------- views ----------
   function route() {
-    const v = location.hash === "#details" ? "details" : "overview";
-    $("#view-overview").hidden = v !== "overview";
-    $("#view-details").hidden = v !== "details";
-    $("#tab-overview").setAttribute("aria-current", v === "overview" ? "page" : "false");
-    $("#tab-details").setAttribute("aria-current", v === "details" ? "page" : "false");
+    const v = location.hash === "#details" ? "details" : location.hash === "#about" ? "about" : "overview";
+    for (const k of ["overview", "details", "about"]) {
+      $("#view-" + k).hidden = v !== k;
+      $("#tab-" + k).setAttribute("aria-current", v === k ? "page" : "false");
+    }
+    window.scrollTo(0, 0);
     if (v === "overview") drawChart();
   }
   window.addEventListener("hashchange", route);
