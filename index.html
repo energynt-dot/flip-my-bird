@@ -1,0 +1,1295 @@
+<meta charset="utf-8">
+<title>Flip My Bird</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column, phone-first. The current deal leads, then money owed, then who you can go back to, then history. */
+:root {
+  --s-recv: #c23a5f; --s-owed: #e88aa3; --s-plan: #f6cfda;
+  --t-retailer: #c23a5f; --t-econnex: #2a78d6; --t-cashback: #d98a00; --t-other: #8a949b;
+  --bg: #eef0f1;          /* galah grey, cool */
+  --surface: #ffffff;
+  --ink: #1f2428;
+  --muted: #5d666d;
+  --line: #d6dbde;
+  --accent: #d2466b;      /* galah pink */
+  --accent-ink: #ffffff;
+  --accent-soft: #fbe3ea;
+  --ok: #1f7a4d;   --ok-soft: #dcf1e5;
+  --wait: #9a5b00; --wait-soft: #fbedd5;
+  --stop: #b3261e; --stop-soft: #fadedb;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15191c; --surface: #1e2428; --ink: #e9ecee; --muted: #9aa4ab; --line: #333b41;
+  --accent: #f07393; --accent-ink: #1b0d12; --accent-soft: #3c2129; --s-recv: #f07393; --s-owed: #a85068; --s-plan: #5a2f3b; --t-retailer: #d95b80; --t-econnex: #3987e5; --t-cashback: #c98500; --t-other: #6b757c;
+  --ok: #6fd19c; --ok-soft: #173326; --wait: #f2b95e; --wait-soft: #3a2c14; --stop: #f28b82; --stop-soft: #3d1f1d;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #15191c; --surface: #1e2428; --ink: #e9ecee; --muted: #9aa4ab; --line: #333b41;
+  --accent: #f07393; --accent-ink: #1b0d12; --accent-soft: #3c2129; --s-recv: #f07393; --s-owed: #a85068; --s-plan: #5a2f3b; --t-retailer: #d95b80; --t-econnex: #3987e5; --t-cashback: #c98500; --t-other: #6b757c;
+  --ok: #6fd19c; --ok-soft: #173326; --wait: #f2b95e; --wait-soft: #3a2c14; --stop: #f28b82; --stop-soft: #3d1f1d;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); margin: 0; }
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 20px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h1 { font: 800 26px/1 var(--display); letter-spacing: -0.02em; margin: 0; }
+.brand svg { width: 38px; height: 38px; flex: none; }
+.sync { font-size: 12px; color: var(--muted); }
+h2 { font: 700 13px/1.2 var(--body); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0; }
+.sec { display: grid; gap: 12px; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+button { font: 600 14px/1 var(--body); border-radius: 999px; padding: 11px 16px; cursor: pointer; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+button.ghost { background: transparent; border-color: transparent; color: var(--accent); padding-inline: 8px; }
+button.small { padding: 7px 12px; font-size: 13px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* The current deal */
+.deal { background: var(--surface); border-radius: 18px; padding: 20px; display: grid; gap: 14px; border: 1px solid var(--line); }
+.deal .row1 { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.deal .who { font: 800 32px/1.05 var(--display); letter-spacing: -0.02em; text-wrap: balance; min-width: 0; overflow-wrap: anywhere; }
+.deal .meta { color: var(--muted); font-size: 14px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1 var(--body); padding: 6px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.wait { background: var(--wait-soft); color: var(--wait); }
+.pill.stop { background: var(--stop-soft); color: var(--stop); }
+.pill.dim { background: var(--bg); color: var(--muted); }
+.big-count { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.big-count .n { font: 800 56px/0.9 var(--display); letter-spacing: -0.03em; }
+.big-count .u { font-size: 15px; color: var(--muted); }
+.track { height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+.track > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.track.done > i { background: var(--ok); }
+.ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); gap: 8px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Money */
+.money { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 4px; }
+.tile .k { font-size: 12px; color: var(--muted); }
+.tile .v { font: 700 26px/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.list { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.item .main { flex: 1; min-width: 0; }
+.item .t { font-weight: 600; overflow-wrap: anywhere; }
+.item .s { font-size: 13px; color: var(--muted); }
+.item .amt { font: 500 15px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.empty-line { padding: 14px 16px; color: var(--muted); font-size: 14px; }
+
+/* History */
+.hist .item { cursor: pointer; }
+.hist .item:hover { background: var(--bg); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line); flex: none; }
+.dot.on { background: var(--accent); }
+
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 18px; padding: 24px 20px; display: grid; gap: 12px; }
+.empty p { margin: 0; color: var(--muted); max-width: 60ch; }
+.empty h3 { margin: 0; font: 700 22px/1.2 var(--display); }
+.note { font-size: 13px; color: var(--muted); }
+.banner { background: var(--accent-soft); border-radius: 12px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* Form sheet */
+dialog { border: 0; padding: 0; border-radius: 20px; width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 24px);
+  background: var(--surface); color: var(--ink); }
+dialog::backdrop { background: rgb(10 12 14 / 0.5); }
+form.sheet { display: grid; gap: 16px; padding: 20px; }
+form.sheet h3 { margin: 0; font: 800 22px/1.2 var(--display); }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label { font-size: 13px; font-weight: 600; }
+.field .hint { font-size: 12px; color: var(--muted); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+input, select, textarea { font: 15px var(--body); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); width: 100%; min-width: 0; }
+textarea { min-height: 64px; resize: vertical; }
+.bonus-row { display: grid; grid-template-columns: 1.3fr 0.7fr 1fr 1.1fr auto; gap: 8px; align-items: center;
+  padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
+.bonus-row > button { padding: 8px 10px; }
+.days-in { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 0; }
+.days-in input { width: 4.5em; flex: 1 1 auto; text-align: center; }
+.bonus-row .links { grid-column: 1 / -1; font-size: 12px; color: var(--muted); display: flex; gap: 4px 12px; flex-wrap: wrap; }
+a { color: var(--accent); }
+.links a { font-weight: 600; text-decoration: none; }
+.links a:hover { text-decoration: underline; }
+.cost { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.cost .line { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.cost .line span:last-child { font: 500 14px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cost .line.total { font-weight: 700; font-size: 15px; }
+.cost .line.total span:last-child { font-weight: 700; color: var(--accent); }
+.cost .sub { font-size: 12px; color: var(--muted); }
+.usage { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.estimate { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+.estimate strong { font-family: var(--mono); }
+.idea { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+.idea .row1 { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.idea .name { font: 700 20px/1.15 var(--display); overflow-wrap: anywhere; }
+.verdict { font-size: 14px; }
+.verdict strong { font-family: var(--mono); }
+.conflict { background: var(--stop-soft); color: var(--stop); border-radius: 14px; padding: 14px 16px; display: grid; gap: 10px; font-size: 14px; }
+.conflict .actions button { border-color: var(--stop); color: var(--stop); background: transparent; }
+.ideas { display: grid; gap: 10px; }
+/* Tabs */
+.tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; justify-self: start; }
+.tabs a { font: 600 14px/1 var(--body); padding: 9px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; }
+.tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
+.view { display: grid; gap: 28px; }
+
+/* Savings */
+.saver { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 16px; }
+.saver .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
+.saver .hero .k { font-size: 13px; color: var(--muted); }
+.saver .hero .v { font: 800 52px/0.95 var(--display); letter-spacing: -0.03em; }
+.saver .stats { display: flex; gap: 18px; flex-wrap: wrap; }
+.saver .stat { display: grid; gap: 2px; }
+.saver .stat .v2 { font: 700 18px/1.1 var(--body); }
+.key { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.key i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.key i.line { height: 2px; border-radius: 1px; width: 14px; background: var(--ink); }
+.legend { display: flex; gap: 6px 14px; flex-wrap: wrap; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font: 11px var(--body); fill: var(--muted); }
+.chart text.end { font: 700 12px var(--body); fill: var(--ink); }
+.chart text.now { fill: var(--ink); font-weight: 700; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 10px; padding: 8px 10px; font-size: 12px; line-height: 1.45; min-width: 150px; z-index: 2; }
+.tip .r { display: flex; justify-content: space-between; gap: 12px; }
+.tip .r span:last-child { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.tip .h { font-weight: 700; margin-bottom: 2px; }
+details.more > summary { cursor: pointer; font-size: 13px; color: var(--accent); font-weight: 600; list-style: none; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before { content: "▸ "; }
+details.more[open] > summary::before { content: "▾ "; }
+details.more[open] > summary { margin-bottom: 10px; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th, .tbl td { text-align: right; padding: 6px 4px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; }
+.tbl th { color: var(--muted); font-weight: 600; }
+.deal .summary { font-size: 14px; color: var(--muted); }
+.deal .summary strong { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+.via { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.via input { width: auto; }
+.slot-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+.slot-head i, .chip i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 9px; border-radius: 999px; background: var(--bg); color: var(--ink); }
+.chip.none { color: var(--muted); }
+.chip .num { font-size: 12px; }
+.reqs { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.req { display: flex; gap: 10px; align-items: baseline; font-size: 14px; flex-wrap: wrap; }
+.req .what { flex: 1; min-width: 0; }
+.req .when { font: 500 13px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.req .tick { color: var(--ok); font-weight: 700; }
+.req.last .when { color: var(--accent); font-weight: 700; }
+.req .links { width: 100%; font-size: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+.warn { background: var(--wait-soft); color: var(--wait); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+.warn.stop { background: var(--stop-soft); color: var(--stop); }
+.form-actions { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.form-actions .r { display: flex; gap: 8px; margin-left: auto; }
+.confirm-del { color: var(--stop); }
+textarea.backup { font: 12px var(--mono); min-height: 120px; }
+
+@media (max-width: 460px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .grid4 { grid-template-columns: 1fr 1fr; }
+  .bonus-row { grid-template-columns: 1fr 1fr auto; }
+  .bonus-row .src { grid-column: 1 / -1; }
+  .bonus-row .amt-in { grid-column: 1; } .bonus-row .st { grid-column: 2 / -1; }
+  .bonus-row .days-in { grid-column: 1 / 3; }
+  .deal .who { font-size: 28px; }
+  .big-count .n { font-size: 48px; }
+}
+@media (prefers-reduced-motion: no-preference) { .track > i { transition: width .6s ease; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="var(--accent)"/>
+        <path d="M11 24c2-7 8-11 15-10l4-3-1 5c2 2 2 5 0 7-3 3-9 4-14 3l-5 3 1-5z" fill="var(--accent-ink)"/>
+        <circle cx="25" cy="17" r="1.6" fill="var(--accent)"/>
+        <path d="M8 13a9 9 0 0 1 9-6" stroke="var(--accent-ink)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M17 4l1 3-3 1" stroke="var(--accent-ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1>Flip My Bird</h1>
+    </div>
+    <span class="sync" id="sync">Loading…</span>
+  </header>
+
+  <div id="example-banner" class="banner" hidden>
+    <span>You're looking at example deals. Nothing here is saved.</span>
+    <button class="small" id="exit-example">Back to my deals</button>
+  </div>
+
+  <nav class="tabs" aria-label="Views"><a href="#overview" id="tab-overview">Overview</a><a href="#details" id="tab-details">Details</a></nav>
+
+  <div class="view" id="view-overview">
+  <section class="sec" aria-labelledby="sav-h">
+    <h2 id="sav-h">Flip savings</h2>
+    <div class="saver">
+      <div class="hero">
+        <div><div class="k">Received so far</div><div class="v" id="sv-recv">$0</div></div>
+        <div class="stats">
+          <div class="stat"><span class="k note">On the way</span><span class="v2" id="sv-owed">$0</span></div>
+          <div class="stat"><span class="k note">Planned</span><span class="v2" id="sv-plan">$0</span></div>
+          <div class="stat"><span class="k note">All up</span><span class="v2" id="sv-total">$0</span></div>
+        </div>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span class="key"><i style="background:var(--t-retailer)"></i>Retailer</span>
+        <span class="key"><i style="background:var(--t-econnex)"></i>Econnex</span>
+        <span class="key"><i style="background:var(--t-cashback)"></i>Cashback site</span>
+        <span class="key"><i style="background:var(--t-other);opacity:.4"></i>Faded = not paid yet</span>
+        <span class="key"><i class="line"></i>Running total</span>
+      </div>
+      <div class="chart" id="chart"></div>
+      <details class="more"><summary>Show as a table</summary><div style="overflow-x:auto" id="chart-table"></div></details>
+    </div>
+  </section>
+
+  <section class="sec" id="now-sec">
+    <h2>Right now</h2>
+    <div id="now"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Deals I'm considering</h2><button class="ghost small" data-act="consider">+ Add a deal to compare</button></div>
+    <div class="ideas" id="ideas"></div>
+  </section>
+  </div>
+
+  <div class="view" id="view-details" hidden>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Your usage</h2><span class="sync" id="usage-saved"></span></div>
+    <div class="usage">
+      <p class="note" style="margin:0">Average per day, from the grid. Your bill or battery app shows this. With solar and a battery these are usually small numbers. Used to estimate every deal's cost.</p>
+      <div class="grid3">
+        <div class="field"><label for="u-peak">Peak bought (kWh)</label><input id="u-peak" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 1"></div>
+        <div class="field"><label for="u-off">Off-peak bought (kWh)</label><input id="u-off" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 3"></div>
+        <div class="field"><label for="u-exp">Solar sent out (kWh)</label><input id="u-exp" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 10"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Bonuses still to come</h2></div>
+    <div class="money" hidden>
+      <div class="tile"><span class="k">Collected so far</span><span class="v" id="paid">$0</span></div>
+      <div class="tile"><span class="k">Still waiting on</span><span class="v" id="pending">$0</span></div>
+    </div>
+    <div class="list" id="pending-list"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Who can I go back to?</h2></div>
+    <div class="list" id="cooldowns"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Every flip</h2><button class="ghost small" id="add-past">+ Add a past deal</button></div>
+    <div class="list hist" id="history"></div>
+  </section>
+
+  <section class="sec">
+    <h2>Backup</h2>
+    <p class="note" style="margin:0" id="backup-note">Keep a copy of your deals, or move them to another device.</p>
+    <div class="actions">
+      <button class="small" id="dl-backup">Download backup</button>
+      <button class="small" id="copy-backup">Copy backup</button>
+      <button class="small" id="restore-open">Restore</button>
+    </div>
+  </section>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form class="sheet" id="form" novalidate>
+    <h3 id="form-title">Add a deal</h3>
+    <div id="form-warn"></div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-retailer">Energy company</label>
+        <input id="f-retailer" list="retailers" required autocomplete="off" placeholder="e.g. GloBird">
+      </div>
+      <div class="field">
+        <label for="f-fuel">What for</label>
+        <select id="f-fuel"><option>Electricity</option><option>Gas</option><option>Electricity + Gas</option></select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-kind">This deal is</label>
+      <select id="f-kind">
+        <option value="current">Who I'm with now</option>
+        <option value="considering">One I'm thinking about</option>
+        <option value="past">One I've already left</option>
+      </select>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-start" id="f-start-label">Started on</label>
+        <input id="f-start" type="date" required>
+        <span class="hint" id="f-start-hint">The day you were connected.</span>
+      </div>
+      <div class="field" id="f-end-field">
+        <label for="f-end">Left on</label>
+        <input id="f-end" type="date">
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-stay">Energy company: must stay (months)</label>
+        <input id="f-stay" type="number" min="0" max="36" step="1" value="3" inputmode="numeric">
+        <span class="hint">From their own T&amp;Cs. Usually 2–3.</span>
+      </div>
+      <div class="field">
+        <label for="f-noreturn">Can't come back for (months)</label>
+        <input id="f-noreturn" type="number" min="0" max="60" step="1" value="12" inputmode="numeric">
+        <span class="hint">After you leave. Often 12.</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Rates</label>
+      <span class="hint">From the plan's fact sheet. Leave blank if you don't know yet.</span>
+      <div class="grid4">
+        <div class="field"><label for="r-supply">Supply ($/day)</label><input id="r-supply" type="number" min="0" step="0.01" inputmode="decimal" placeholder="2.53"></div>
+        <div class="field"><label for="r-peak">Peak (c/kWh)</label><input id="r-peak" type="number" min="0" step="0.01" inputmode="decimal" placeholder="35"></div>
+        <div class="field"><label for="r-off">Off-peak (c/kWh)</label><input id="r-off" type="number" min="0" step="0.01" inputmode="decimal" placeholder="24"></div>
+        <div class="field"><label for="r-fit">Feed-in (c/kWh)</label><input id="r-fit" type="number" min="0" step="0.01" inputmode="decimal" placeholder="3"></div>
+      </div>
+      <div id="estimate"></div>
+    </div>
+    <div class="field">
+      <label>Bonuses for this deal</label>
+      <span class="hint">Check all three for every flip: the energy company, Econnex and a cashback site. Leave the amount blank if there isn't one. Each can have its own stay rule, and your countdown waits for whichever ends last.</span>
+      <div id="bonus-rows" style="display:grid;gap:8px"></div>
+      <div><button type="button" class="small" id="add-bonus">+ Another bonus</button></div>
+    </div>
+    <div class="field">
+      <label for="f-notes">Notes</label>
+      <textarea id="f-notes" placeholder="Rate, account number, promo code, what the cashback T&amp;Cs said…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="ghost" id="del-btn" hidden>Delete</button>
+      <div class="r">
+        <button type="button" id="cancel-btn">Cancel</button>
+        <button type="submit" class="primary" id="save-btn">Save</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="restore-dlg">
+  <form class="sheet" id="restore-form">
+    <h3>Restore a backup</h3>
+    <p class="note" style="margin:0">Paste a backup, or choose the file you downloaded. Deals with the same id are replaced; others are added.</p>
+    <textarea class="backup" id="restore-text" placeholder='{"app":"flip-my-bird", ...}'></textarea>
+    <input type="file" id="restore-file" accept=".json,application/json">
+    <div><button type="button" class="small" id="restore-example">Load the example file</button>
+      <span class="note">Made-up deals to try the app. Delete them later from Every flip.</span></div>
+    <div id="restore-msg" class="note"></div>
+    <div class="form-actions"><div class="r">
+      <button type="button" id="restore-cancel">Cancel</button>
+      <button type="submit" class="primary">Restore</button>
+    </div></div>
+  </form>
+</dialog>
+
+<datalist id="retailers">
+  <option>AGL</option><option>Origin Energy</option><option>EnergyAustralia</option><option>Alinta Energy</option>
+  <option>Red Energy</option><option>Lumo Energy</option><option>Simply Energy</option><option>Powershop</option>
+  <option>Momentum Energy</option><option>Dodo</option><option>Tango Energy</option><option>GloBird Energy</option>
+  <option>OVO Energy</option><option>Amber Electric</option><option>1st Energy</option><option>ReAmped Energy</option>
+  <option>Sumo</option><option>Energy Locals</option><option>Nectr</option><option>CovaU</option>
+  <option>Kogan Energy</option><option>Powerclub</option><option>Diamond Energy</option><option>Engie</option>
+</datalist>
+<datalist id="sources">
+  <option>ShopBack</option><option>TopCashback</option><option>Econnex</option><option>Retailer sign-up credit</option>
+  <option>Referral</option><option>Cashrewards</option><option>Compare the Market</option><option>iSelect</option>
+</datalist>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const LS_KEY = "flip-my-bird.v1";
+
+  // ---------- dates ----------
+  const pad = (n) => String(n).padStart(2, "0");
+  const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parse = (s) => { if (!s) return null; const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const today = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
+  function addMonths(d, n) {
+    const day = d.getDate();
+    const r = new Date(d.getFullYear(), d.getMonth() + Number(n || 0), 1);
+    const last = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+    r.setDate(Math.min(day, last));
+    return r;
+  }
+  const daysBetween = (a, b) => Math.round((b - a) / 86400000);
+  const fmt = (d) => d ? d.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "";
+  const money = (n) => "$" + (Math.round(Number(n) || 0)).toLocaleString("en-AU");
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  // ---------- derived ----------
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + Number(n || 0));
+  // Every stay rule on a deal: the energy company's, plus each bonus that has its own.
+  function stayRules(f) {
+    const start = parse(f.start);
+    const rules = [{ label: `${f.retailer} plan`, detail: `${f.stayMonths} month${f.stayMonths == 1 ? "" : "s"}`, date: addMonths(start, f.stayMonths), source: null }];
+    for (const b of (f.bonuses || [])) if (Number(b.stayDays) > 0)
+      rules.push({ label: bonusLabel(b), detail: `${b.stayDays} days`, date: addDays(start, b.stayDays), source: bonusType(b) === "retailer" ? "sign up bonus" : bonusType(b) === "econnex" ? "Econnex" : bonusLabel(b) });
+    return rules.sort((a, b) => a.date - b.date);
+  }
+  const freeDate = (f) => stayRules(f).reduce((m, r) => r.date > m ? r.date : m, parse(f.start));
+  const SITES = {
+    econnex: "https://www.econnex.com.au/",
+    shopback: "https://www.shopback.com.au/",
+    topcashback: "https://www.topcashback.com.au/",
+    cashrewards: "https://www.cashrewards.com.au/",
+  };
+  function termsLinks(source, retailer) {
+    const src = String(source || "").trim(); if (!src) return "";
+    const key = src.toLowerCase().replace(/[^a-z]/g, "");
+    const sites = Object.keys(SITES).filter(k => key.includes(k));
+    const q = (extra) => encodeURIComponent(`${src} ${retailer || ""} ${extra}`.replace(/\s+/g, " ").trim());
+    const out = [];
+    const names = { econnex: "Econnex", shopback: "ShopBack", topcashback: "TopCashback", cashrewards: "Cashrewards" };
+    for (const k of sites) out.push(`<a href="${SITES[k]}" target="_blank" rel="noopener">${names[k]} site</a>`);
+    out.push(`<a href="https://www.ozbargain.com.au/search/node/${q("")}" target="_blank" rel="noopener">OzBargain posts</a>`);
+    out.push(`<a href="https://www.google.com/search?q=${q("cashback terms conditions stay days")}" target="_blank" rel="noopener">Search the terms</a>`);
+    return out.join("");
+  }
+  // Cost model: supply ($/day) + peak and off-peak bought (c/kWh) - solar credit (c/kWh).
+  const hasRates = (r) => r && [r.supply, r.peak, r.off, r.fit].some(v => v !== null && v !== undefined && v !== "");
+  function dailyCost(r, u) {
+    const n = (v) => Number(v) || 0;
+    const supply = n(r.supply), buy = (n(r.peak) * n(u.peak) + n(r.off) * n(u.off)) / 100, credit = n(r.fit) * n(u.exp) / 100;
+    return { supply, buy, credit, total: supply + buy - credit };
+  }
+  const hasUsage = (u) => u && [u.peak, u.off, u.exp].some(v => Number(v) > 0);
+  const m2 = (n) => (n < 0 ? "−$" : "$") + Math.abs(n).toFixed(2);
+  function costBlock(f) {
+    if (!hasRates(f.rates)) return "";
+    const u = use(), d = dailyCost(f.rates, u);
+    const start = parse(f.start), days = Math.max(1, daysBetween(start, freeDate(f)));
+    const bonus = (f.bonuses || []).reduce((s, b) => s + Number(b.amount || 0), 0);
+    const stay = d.total * days;
+    return `<div class="cost">
+      <div class="line"><span>Expected cost a day</span><span>${m2(d.total)}</span></div>
+      <div class="sub">Supply ${m2(d.supply)} · power bought ${m2(d.buy)} · solar credit ${m2(-d.credit)}${hasUsage(u) ? "" : " · add your usage below for a real estimate"}</div>
+      <div class="line"><span>Over the stay (${days} days)</span><span>${money(stay)}</span></div>
+      ${bonus ? `<div class="line"><span>Less bonuses</span><span>−${money(bonus)}</span></div>
+      <div class="line total"><span>What this deal really costs you</span><span>${stay - bonus < 0 ? "−" : ""}${money(Math.abs(stay - bonus))}</span></div>` : ""}
+    </div>`;
+  }
+  const hasElec = (fuel) => String(fuel || "").includes("Electricity");
+  const hasGas = (fuel) => String(fuel || "").includes("Gas");
+  const fuelsOverlap = (a, b) => (hasElec(a) && hasElec(b)) || (hasGas(a) && hasGas(b));
+  const isLive = (f) => !f.considering;
+  const isCurrent = (f) => isLive(f) && !f.end;
+  // Current deals that clash with f (same fuel). You can only be with one company per fuel.
+  const clashes = (f, list = data()) => list.filter(x => x.id !== f.id && isCurrent(x) && fuelsOverlap(x.fuel, f.fuel));
+  // What saving a current deal would do to the others. Stops duplicates and out-of-order switches.
+  function planSave(f) {
+    const block = [], notes = [], toEnd = [], toRemove = [];
+    const name = norm(f.retailer);
+    for (const x of data()) {
+      if (x.id === f.id) continue;
+      const same = name && norm(x.retailer) === name && fuelsOverlap(x.fuel, f.fuel);
+      if (same && x.considering) { toRemove.push(x); notes.push(`This replaces the ${esc(x.retailer)} deal in "considering", so it isn't counted twice.`); continue; }
+      if (same && !x.considering && (!x.end || x.end > f.start)) {
+        block.push(`You already have a ${esc(x.retailer)} deal from ${esc(fmt(parse(x.start)))}. Edit that one instead of adding another, or delete one of them.`); continue;
+      }
+      if (isCurrent(x) && fuelsOverlap(x.fuel, f.fuel)) {
+        if (x.start >= f.start) block.push(`Your ${esc(x.retailer)} deal starts on ${esc(fmt(parse(x.start)))}, after this one. Check the dates, or mark one as "One I've already left".`);
+        else { toEnd.push(x); notes.push(`You're marked as with ${esc(x.retailer)} now. Saving will end that deal on ${esc(fmt(parse(f.start)))}. If you haven't switched yet, choose "One I'm thinking about" above.`); }
+      }
+    }
+    return { block, notes, toEnd, toRemove };
+  }
+  // Every flip can earn up to three kinds of bonus. Older entries are sorted into a kind by name.
+  const TYPES = [
+    { id: "retailer", name: "Retailer bonus", hint: "Sign-up credit from the energy company" },
+    { id: "econnex", name: "Econnex", hint: "Paid by Econnex itself" },
+    { id: "cashback", name: "Cashback site", hint: "Paid by ShopBack, TopCashback… even if it sends you through Econnex" },
+  ];
+  function bonusType(b) {
+    if (b.type) return b.type;
+    const k = String(b.source || "").toLowerCase();
+    if (/shopback|topcashback|cashrewards|cash ?back/.test(k)) return "cashback";
+    if (k.includes("econnex")) return "econnex";
+    if (/retailer|sign.?up|credit|supplier|vendor/.test(k)) return "retailer";
+    return "other";
+  }
+  function bonusLabel(b) {
+    const t = bonusType(b);
+    if (t === "retailer") return "Retailer bonus";
+    if (t === "econnex") return "Econnex";
+    if (t === "cashback") return (b.source && !/^cash ?back( site)?$/i.test(b.source) ? b.source : "Cashback site") + (b.viaEconnex ? " via Econnex" : "");
+    return b.source || "Other bonus";
+  }
+  function bonusChips(f) {
+    const bs = f.bonuses || [];
+    const chips = TYPES.map(t => {
+      const items = bs.filter(b => bonusType(b) === t.id && Number(b.amount) > 0);
+      const amt = items.reduce((s, b) => s + Number(b.amount), 0);
+      const paid = items.length && items.every(b => b.status === "paid");
+      return amt ? `<span class="chip"><i style="background:var(--t-${t.id})"></i>${esc(items.length === 1 ? bonusLabel(items[0]) : t.name)} <span class="num">${money(amt)}</span>${paid ? " ✓" : ""}</span>`
+        : `<span class="chip none"><i style="background:var(--t-${t.id});opacity:.35"></i>${esc(t.name)}: none</span>`;
+    });
+    for (const b of bs.filter(b => bonusType(b) === "other" && Number(b.amount) > 0))
+      chips.push(`<span class="chip"><i style="background:var(--t-other)"></i>${esc(bonusLabel(b))} <span class="num">${money(b.amount)}</span></span>`);
+    return `<div class="chips">${chips.join("")}</div>`;
+  }
+  const returnDate = (f) => f.end ? addMonths(parse(f.end), f.noReturnMonths) : null;
+  const norm = (s) => String(s || "").trim().toLowerCase().replace(/\s+(energy|electric|power)$/, "");
+
+  // ---------- state & storage ----------
+  let flips = [];
+  let usage = {};              // { peak, off, exp } kWh/day
+  const EX_USAGE = { peak: 1, off: 3, exp: 10 };
+  const use = () => example ? EX_USAGE : usage;
+  let example = null;          // when showing example data
+  let store = null;            // { mode, save, remove }
+  let dl = null;               // downloads namespace
+  const data = () => example || flips;
+
+  function sortFlips(arr) { return arr.slice().sort((a, b) => (b.start || "").localeCompare(a.start || "")); }
+
+  function localStore() {
+    try { flips = JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch { flips = []; }
+    try { usage = JSON.parse(localStorage.getItem(LS_KEY + ".usage") || "{}"); } catch { usage = {}; }
+    const persist = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(flips)); } catch {} };
+    return {
+      mode: "local",
+      async save(f) { flips = flips.filter(x => x.id !== f.id).concat(f); persist(); render(); },
+      async remove(id) { flips = flips.filter(x => x.id !== id); persist(); render(); },
+      async saveUsage(u) { usage = u; try { localStorage.setItem(LS_KEY + ".usage", JSON.stringify(u)); } catch {} render(); },
+    };
+  }
+
+  // Where deals are kept:
+  //  - the owner: their account (flips/, profile/)
+  //  - anyone else signed in who can save: their own private space (data/users/<id>/)
+  //  - everyone else (outside visitors, or saving refused): this browser
+  const LOCAL_ONLY = LS_KEY + ".local";
+  function useLocal(reason) {
+    store = localStore();
+    setSync("Saved on this device only");
+    $("#backup-note").textContent = reason || "Your deals are saved in this browser only. Download a backup now and then so you don't lose them.";
+    fillUsage();
+    render();
+  }
+  function goLocalAfterRefusal() {
+    unsubs.forEach(u => { try { u(); } catch {} });
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(flips));
+      localStorage.setItem(LS_KEY + ".usage", JSON.stringify(usage));
+      localStorage.setItem(LOCAL_ONLY, "1");
+    } catch {}
+    useLocal("This copy of Flip My Bird can't save to your account, so your deals are saved in this browser. Download a backup now and then so you don't lose them.");
+  }
+  let unsubs = [];
+
+  async function boot() {
+    route();
+    render();
+    const c = window.claude;
+    const db = c && c.use ? await c.use("db").catch(() => null) : null;
+    if (c && c.use) dl = await c.use("downloads").catch(() => null);
+    if (!db) { useLocal(); return; }
+    const user = await c.use("user").catch(() => null);
+    const owner = user ? await user.isOwner() : false;
+    let col, usageDoc;
+    if (owner) {
+      col = db.collection("flips");
+      usageDoc = db.doc("profile/usage");
+    } else {
+      let localOnly = false; try { localOnly = localStorage.getItem(LOCAL_ONLY) === "1"; } catch {}
+      const id = user ? await user.id() : null;
+      if (!id || localOnly) { useLocal(); return; }
+      const mine = db.doc("data/users/" + id + "/app");
+      col = mine.collection("flips");
+      usageDoc = db.doc("data/users/" + id + "/usage");
+    }
+    unsubs.push(usageDoc.onSnapshot((snap) => { usage = snap.exists ? { ...snap.data() } : {}; fillUsage(); render(); }, () => {}));
+    let timer = setTimeout(() => setSync("Can't reach your saved deals yet…"), 10000);
+    unsubs.push(col.onSnapshot((snap) => {
+      flips = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+      if (!snap.metadata.fromCache) { clearTimeout(timer); setSync(owner ? "Saved to your account" : "Saved to your account, private to you"); $("#backup-note").textContent = "Your deals save to your account automatically. Nobody else can see them. You can also keep a copy."; }
+      render();
+    }, (e) => { clearTimeout(timer); setSync(e.code === "revoked" ? "Saving is off for this view" : "Couldn't load saved deals"); }));
+    // A refused write means this viewer can't save here: move to browser storage and keep going.
+    const guard = (fn) => async (...a) => {
+      try { return await fn(...a); }
+      catch (e) {
+        if (!owner && e && ["invalid_argument", "not_granted", "capability_disabled", "revoked"].includes(e.code)) {
+          goLocalAfterRefusal(); return store[fn.name] ? store[fn.name](...a) : undefined;
+        }
+        throw e;
+      }
+    };
+    store = {
+      mode: "db",
+      save: guard(async function save(f) { await col.doc(f.id).set(f); }),
+      remove: guard(async function remove(id) { await col.doc(id).delete(); }),
+      saveUsage: guard(async function saveUsage(u) { usage = u; render(); await usageDoc.set(u); }),
+    };
+  }
+  function setSync(t) { $("#sync").textContent = t; }
+
+  // ---------- render ----------
+  function render() {
+    const all = sortFlips(data());
+    $("#example-banner").hidden = !example;
+    fillUsage();
+    const live = all.filter(isLive), ideas = all.filter(f => f.considering);
+    renderSavings(all);
+    renderNow(live);
+    renderIdeas(ideas, live);
+    renderMoney(live);
+    renderCooldowns(live);
+    renderHistory(live);
+  }
+
+  function renderNow(all) {
+    const el = $("#now");
+    const active = all.filter(f => !f.end);
+    if (!all.length) {
+      el.innerHTML = `<div class="empty">
+        <h3>Who are you with right now?</h3>
+        <p>Add your current energy deal and the bonuses you're chasing. Flip My Bird counts down to the day you can switch without losing the bonus, and remembers which companies won't take you back yet.</p>
+        <div class="actions"><button class="primary" data-act="add">Add my current deal</button><button data-act="example">Show me an example</button></div>
+      </div>`;
+      return;
+    }
+    if (!active.length) {
+      el.innerHTML = `<div class="empty">
+        <h3>No current deal tracked</h3>
+        <p>Your last deal has an end date. Add the company you're with now.</p>
+        <div class="actions"><button class="primary" data-act="add">Add current deal</button></div>
+      </div>`;
+      return;
+    }
+    const t = today();
+    let warn = "";
+    const seen = new Set();
+    for (const f of active) {
+      const c = clashes(f, active);
+      if (!c.length || seen.has(f.id)) continue;
+      const group = [f, ...c]; group.forEach(g => seen.add(g.id));
+      warn += `<div class="conflict"><div><strong>You can only be with one company for ${esc(hasElec(f.fuel) ? "electricity" : "gas")}.</strong> These are all marked as current: ${group.map(g => esc(g.retailer)).join(" and ")}. Move the ones you haven't switched to into "considering".</div>
+        <div class="actions">${group.map(g => `<button class="small" data-act="to-consider" data-id="${esc(g.id)}">${esc(g.retailer)} is just an idea</button>`).join("")}</div></div>`;
+    }
+    el.innerHTML = warn + active.map(f => {
+      const start = parse(f.start), free = freeDate(f);
+      const total = Math.max(1, daysBetween(start, free));
+      const gone = Math.min(total, Math.max(0, daysBetween(start, t)));
+      const left = daysBetween(t, free);
+      const done = left <= 0;
+      const pct = Math.round((gone / total) * 100);
+      const pill = done ? `<span class="pill ok">Free to flip</span>`
+        : left <= 14 ? `<span class="pill wait">Nearly there</span>` : `<span class="pill dim">Staying put</span>`;
+      const count = done
+        ? `<div class="big-count"><span class="n">Go</span><span class="u">Every stay rule finished by ${esc(fmt(free))}. Time to find the next bonus.</span></div>`
+        : `<div class="big-count"><span class="n num">${left}</span><span class="u">${left === 1 ? "day" : "days"} until you can flip, on <strong>${esc(fmt(free))}</strong></span></div>`;
+      const pend = (f.bonuses || []).filter(b => b.status !== "paid").reduce((s, b) => s + Number(b.amount || 0), 0);
+      return `<div class="deal">
+        <div class="row1">
+          <div style="min-width:0">
+            <div class="who">${esc(f.retailer)}</div>
+            <div class="meta">${esc(f.fuel)} · since ${esc(fmt(start))}${pend ? ` · <span class="num">${money(pend)}</span> bonus pending` : ""}</div>
+          </div>
+          ${pill}
+        </div>
+        ${bonusChips(f)}
+        ${count}
+        <div><div class="track ${done ? "done" : ""}"><i style="width:${pct}%"></i></div>
+          <div class="ends"><span>${esc(fmt(start))}</span><span>${esc(fmt(free))}</span></div></div>
+        <div class="summary">${hasRates(f.rates) ? `About <strong>${m2(dailyCost(f.rates, use()).total)}</strong> a day · ` : ""}${stayRules(f).length} stay rule${stayRules(f).length > 1 ? "s" : ""}, ${stayRules(f).filter(r => r.date <= t).length} done</div>
+        <details class="more"><summary>Stay rules and costs</summary>
+        ${costBlock(f) || `<div class="cost"><div class="sub">Add ${esc(f.retailer)}'s rates (Edit deal) to compare it with the deals you're considering.</div></div>`}
+        <div class="reqs">${stayRules(f).map((r, i, a) => `<div class="req ${i === a.length - 1 && !done ? "last" : ""}">
+            <span class="what">${r.date <= t ? '<span class="tick">✓</span> ' : ""}<strong>${esc(r.label)}</strong> · stay ${esc(r.detail)}</span>
+            <span class="when">${esc(fmt(r.date))}</span>
+            ${r.source !== null ? `<span class="links">${termsLinks(r.source, f.retailer)}</span>` : ""}
+          </div>`).join("")}</div>
+        </details>
+        <div class="actions">
+          <button class="primary" data-act="flip" data-id="${esc(f.id)}">I've flipped</button>
+          <button data-act="edit" data-id="${esc(f.id)}">Edit deal</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function renderIdeas(ideas, live) {
+    const el = $("#ideas");
+    const t = today();
+    const current = live.filter(isCurrent);
+    if (!ideas.length) {
+      el.innerHTML = `<div class="list"><div class="empty-line">Found a deal? Add it here to see what it would really cost${current.length ? ` next to ${esc(current[0].retailer)}` : ""}, before you switch.</div></div>`;
+      return;
+    }
+    el.innerHTML = ideas.map(f => {
+      const cur = current.find(c => fuelsOverlap(c.fuel, f.fuel));
+      const startD = parse(f.start) < t ? t : parse(f.start);
+      const draft = { ...f, start: toISO(startD) };
+      const days = Math.max(1, daysBetween(startD, freeDate(draft)));
+      const bonus = (f.bonuses || []).reduce((s, b) => s + Number(b.amount || 0), 0);
+      const u = use();
+      let verdict = "";
+      if (hasRates(f.rates)) {
+        const mine = dailyCost(f.rates, u).total * days - bonus;
+        verdict = `<div class="verdict">Over its ${days}-day stay: <strong>${money(dailyCost(f.rates, u).total * days)}</strong>${bonus ? `, or <strong>${mine < 0 ? "−" : ""}${money(Math.abs(mine))}</strong> after ${money(bonus)} in bonuses` : ""}.</div>`;
+        if (cur && hasRates(cur.rates)) {
+          const stay = dailyCost(cur.rates, u).total * days;
+          const diff = stay - mine;
+          verdict += `<div class="verdict">Staying with ${esc(cur.retailer)} for those ${days} days: <strong>${money(stay)}</strong>. ${diff >= 0 ? `Switching saves you about <strong>${money(diff)}</strong>.` : `Switching costs you about <strong>${money(-diff)}</strong> more.`}</div>`;
+        } else if (cur) verdict += `<div class="sub note">Add ${esc(cur.retailer)}'s rates to see if switching saves you money.</div>`;
+      } else verdict = `<div class="note">Add this deal's rates to see what it would cost.</div>`;
+      let pill = `<span class="pill dim">Idea</span>`;
+      if (cur) {
+        const free = freeDate(cur);
+        pill = free <= t ? `<span class="pill ok">You can switch now</span>` : `<span class="pill wait">Switch from ${esc(fmt(free))}</span>`;
+      }
+      const back = live.filter(x => x.end && norm(x.retailer) === norm(f.retailer)).map(returnDate).sort((a, b) => b - a)[0];
+      const block = back && back > startD ? `<div class="warn stop">You were with ${esc(f.retailer)} recently. They may not give you a new-customer bonus until ${esc(fmt(back))}.</div>` : "";
+      return `<div class="idea">
+        <div class="row1"><div style="min-width:0"><div class="name">${esc(f.retailer)}</div>
+          <div class="meta note">${esc(f.fuel)}${bonus ? ` · ${money(bonus)} in bonuses` : ""}${f.rates && f.rates.supply != null ? ` · supply ${m2(Number(f.rates.supply))}/day` : ""}</div></div>${pill}</div>
+        ${bonusChips(f)}
+        ${block}${verdict}
+        <div class="actions">
+          <button class="primary small" data-act="switch" data-id="${esc(f.id)}">I've switched to this</button>
+          <button class="small" data-act="edit" data-id="${esc(f.id)}">Edit</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  // When each bonus lands: paid ones on the day they were paid (or the deal's start),
+  // the rest once their stay rule is met (or today, if that date has passed).
+  function bonusEvents(all) {
+    const t = today(), out = [];
+    for (const f of all) {
+      const start = parse(f.start); if (!start) continue;
+      for (const b of (f.bonuses || [])) {
+        const amount = Number(b.amount || 0); if (!amount) continue;
+        let kind, date;
+        if (f.considering) { kind = "plan"; }
+        else if (b.status === "paid") { kind = "recv"; date = parse(b.paidOn) || start; }
+        else { kind = "owed"; }
+        if (!date) {
+          date = Number(b.stayDays) > 0 ? addDays(start, b.stayDays) : addMonths(start, f.stayMonths || 0);
+          if (date < t) date = t;
+        }
+        out.push({ kind, date, amount, type: bonusType(b), source: bonusLabel(b), retailer: f.retailer });
+      }
+    }
+    return out.sort((a, b) => a.date - b.date);
+  }
+
+  const monthKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+  function monthsOf(events) {
+    if (!events.length) return [];
+    const first = events[0].date, last = events[events.length - 1].date, t = today();
+    const end = last > t ? last : t;
+    const months = [];
+    for (let d = new Date(first.getFullYear(), first.getMonth(), 1); d <= end; d = new Date(d.getFullYear(), d.getMonth() + 1, 1))
+      months.push({ d, key: monthKey(d), recv: 0, owed: 0, plan: 0, total: 0, items: [] });
+    for (const e of events) { const m = months.find(x => x.key === monthKey(e.date)); if (m) { m[e.kind] += e.amount; m.total += e.amount; m.items.push(e); } }
+    let run = 0; for (const m of months) { run += m.total; m.cum = run; }
+    return months.slice(-24);
+  }
+
+  function niceMax(v) { if (v <= 0) return 100; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
+
+  let lastMonths = [];
+  function renderSavings(all) {
+    const ev = bonusEvents(all);
+    const sum = (k) => ev.filter(e => e.kind === k).reduce((s, e) => s + e.amount, 0);
+    $("#sv-recv").textContent = money(sum("recv"));
+    $("#sv-owed").textContent = money(sum("owed"));
+    $("#sv-plan").textContent = money(sum("plan"));
+    $("#sv-total").textContent = money(sum("recv") + sum("owed") + sum("plan"));
+    lastMonths = monthsOf(ev);
+    drawChart();
+    const ms = lastMonths;
+    const st = { recv: "Received", owed: "On the way", plan: "Planned" };
+    let run = 0;
+    $("#chart-table").innerHTML = ev.length ? `<table class="tbl"><thead><tr><th>Month</th><th>Bonus</th><th>Deal</th><th>Status</th><th>Amount</th><th>Total</th></tr></thead><tbody>${
+      ev.map(e => { run += e.amount; return `<tr><td>${esc(e.date.toLocaleDateString("en-AU", { month: "short", year: "2-digit" }))}</td><td>${esc(e.source)}</td><td>${esc(e.retailer)}</td><td>${st[e.kind]}</td><td>${money(e.amount)}</td><td>${money(run)}</td></tr>`; }).join("")}</tbody></table>` : "";
+  }
+
+  function drawChart() {
+    const el = $("#chart"), ms = lastMonths;
+    if (!ms.length) { el.innerHTML = `<div class="note">Add a deal with a bonus and your savings build up here, month by month.</div>`; return; }
+    const W = Math.max(280, el.clientWidth || 600), H = 220, L = 44, Rp = 44, T = 16, B = 28;
+    const iw = W - L - Rp, ih = H - T - B;
+    const max = niceMax(Math.max(...ms.map(m => m.cum)));
+    const y = (v) => T + ih - (v / max) * ih;
+    const band = iw / ms.length, bw = Math.min(24, band * 0.62);
+    const cx = (i) => L + band * i + band / 2;
+    const nowKey = monthKey(today());
+    let g = "";
+    for (let i = 0; i <= 4; i++) {
+      const v = (max / 4) * i, yy = y(v);
+      g += `<line x1="${L}" x2="${W - Rp}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/>`;
+      g += `<text x="${L - 8}" y="${yy + 4}" text-anchor="end">${money(v)}</text>`;
+    }
+    const seg = (x, y0, y1, fill, top, faded) => {
+      const h = y0 - y1; if (h <= 0) return "";
+      const r = top ? Math.min(4, h, bw / 2) : 0;
+      return `<path fill="${fill}"${faded ? ' fill-opacity="0.5"' : ""} d="M${x},${y0} V${y1 + r} Q${x},${y1} ${x + r},${y1} H${x + bw - r} Q${x + bw},${y1} ${x + bw},${y1 + r} V${y0} Z"/>`;
+    };
+    let bars = "", labels = "";
+    ms.forEach((m, i) => {
+      const x = cx(i) - bw / 2;
+      const parts = [];
+      for (const t of ["retailer", "econnex", "cashback", "other"]) for (const paid of [true, false]) {
+        const v = m.items.filter(e => e.type === t && (e.kind === "recv") === paid).reduce((s, e) => s + e.amount, 0);
+        if (v > 0) parts.push({ v, fill: `var(--t-${t})`, faded: !paid });
+      }
+      let base = 0;
+      parts.forEach((pt, j) => {
+        const y0 = y(base) - (j ? 2 : 0), y1 = y(base + pt.v);
+        bars += seg(x, y0, y1, pt.fill, j === parts.length - 1, pt.faded);
+        base += pt.v;
+      });
+      const showLabel = ms.length <= 8 || i % Math.ceil(ms.length / 8) === 0 || m.key === nowKey;
+      if (showLabel) {
+        const jan = m.d.getMonth() === 0 || i === 0;
+        labels += `<text x="${cx(i)}" y="${H - 8}" text-anchor="middle" class="${m.key === nowKey ? "now" : ""}">${esc(m.d.toLocaleDateString("en-AU", { month: "short" }))}${jan ? " " + String(m.d.getFullYear()).slice(2) : ""}</text>`;
+      }
+    });
+    // Step line: flat between months, rising where money lands.
+    const pts = ms.map((m, i) => `${i ? `${cx(i)},${y(ms[i - 1].cum)} ` : ""}${cx(i)},${y(m.cum)}`).join(" ");
+    const li = ms.length - 1, lx = cx(li), ly = y(ms[li].cum);
+    const svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Bonuses by month, stacked by retailer, Econnex and cashback, unpaid ones faded, with a running total line reaching ${money(ms[li].cum)}">
+      ${g}${bars}
+      <polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${lx}" cy="${ly}" r="4" fill="var(--ink)" stroke="var(--surface)" stroke-width="2"/>
+      <text class="end" x="${lx + 8}" y="${ly + 4}">${money(ms[li].cum)}</text>
+      ${labels}
+      <line id="hover-line" x1="0" x2="0" y1="${T}" y2="${T + ih}" stroke="var(--muted)" stroke-width="1" opacity="0"/>
+      ${ms.map((m, i) => `<rect data-i="${i}" x="${L + band * i}" y="${T}" width="${band}" height="${ih + B}" fill="transparent"/>`).join("")}
+    </svg><div class="tip" id="tip" hidden></div>`;
+    el.innerHTML = svg;
+    const tip = $("#tip"), hl = $("#hover-line");
+    const show = (i) => {
+      const m = ms[i]; if (!m) return;
+      const row = (k, v) => `<div class="r"><span>${k}</span><span>${money(v)}</span></div>`;
+      tip.innerHTML = `<div class="h">${esc(m.d.toLocaleDateString("en-AU", { month: "long", year: "numeric" }))}</div>${m.items.map(e => `<div class="r"><span>${esc(e.source)} · ${esc(e.retailer)}${e.kind === "recv" ? "" : e.kind === "owed" ? " (on the way)" : " (planned)"}</span><span>${money(e.amount)}</span></div>`).join("") || '<div class="r"><span>No bonuses this month</span><span></span></div>'}${row("Running total", m.cum)}`;
+      tip.hidden = false;
+      const sx = el.clientWidth / W, px = cx(i) * sx;
+      const tw = tip.offsetWidth;
+      tip.style.left = Math.max(0, Math.min(el.clientWidth - tw, px - tw / 2)) + "px";
+      tip.style.top = Math.max(0, y(m.cum) * sx - tip.offsetHeight - 12) + "px";
+      hl.setAttribute("x1", cx(i)); hl.setAttribute("x2", cx(i)); hl.setAttribute("opacity", "0.5");
+    };
+    // Mouse: follows the pointer. Touch: a tap keeps the box up for 10 seconds;
+    // tapping the same month again, or anywhere else, closes it.
+    let pinned = -1;
+    const hide = () => { clearTimeout(tipTimer); pinned = -1; tip.hidden = true; hl.setAttribute("opacity", "0"); };
+    el.querySelectorAll("rect[data-i]").forEach(r => {
+      r.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") show(+r.dataset.i); });
+      r.addEventListener("pointerdown", (e) => {
+        if (e.pointerType === "mouse") return;
+        const i = +r.dataset.i;
+        if (pinned === i) { hide(); return; }
+        show(i); pinned = i;
+        clearTimeout(tipTimer); tipTimer = setTimeout(hide, 10000);
+      });
+    });
+    el.querySelector("svg").addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") hide(); });
+    tipHide = hide;
+  }
+  let tipTimer = 0, tipHide = () => {};
+  document.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" && !e.target.closest("#chart")) tipHide(); });
+  let rsz; window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(drawChart, 150); });
+
+  // ---------- views ----------
+  function route() {
+    const v = location.hash === "#details" ? "details" : "overview";
+    $("#view-overview").hidden = v !== "overview";
+    $("#view-details").hidden = v !== "details";
+    $("#tab-overview").setAttribute("aria-current", v === "overview" ? "page" : "false");
+    $("#tab-details").setAttribute("aria-current", v === "details" ? "page" : "false");
+    if (v === "overview") drawChart();
+  }
+  window.addEventListener("hashchange", route);
+
+  function renderMoney(all) {
+    let paid = 0, pending = 0; const rows = [];
+    for (const f of all) for (const b of (f.bonuses || [])) {
+      const a = Number(b.amount || 0);
+      if (b.status === "paid") paid += a;
+      else { pending += a; rows.push({ f, b }); }
+    }
+    $("#paid").textContent = money(paid);
+    $("#pending").textContent = money(pending);
+    const label = { pending: "Not tracked yet", tracked: "Tracked, waiting to pay" };
+    $("#pending-list").innerHTML = rows.length ? rows.map(({ f, b }) => `
+      <div class="item">
+        <div class="main"><div class="t"><span class="chip" style="padding:0;background:none"><i style="background:var(--t-${bonusType(b)})"></i>${esc(bonusLabel(b))}</span></div>
+          <div class="s">${esc(f.retailer)} · ${esc(label[b.status] || "Waiting")}${Number(b.stayDays) > 0 ? ` · stay until ${esc(fmt(addDays(parse(f.start), b.stayDays)))}` : ""}</div></div>
+        <span class="amt">${money(b.amount)}</span>
+        <button class="small" data-act="paid" data-id="${esc(f.id)}" data-b="${esc(b.id)}">Paid</button>
+      </div>`).join("")
+      : `<div class="empty-line">${all.length ? "Nothing outstanding. Every bonus has landed." : "Bonuses you're owed show up here until they're paid."}</div>`;
+  }
+
+  function renderCooldowns(all) {
+    const t = today();
+    const by = new Map();  // latest deal per retailer
+    for (const f of all) {
+      const k = norm(f.retailer);
+      const cur = by.get(k);
+      if (!cur || (f.start || "") > (cur.start || "")) by.set(k, f);
+    }
+    const rows = [...by.values()].map(f => {
+      if (!f.end) return { f, rank: 0, pill: `<span class="pill dim">With them now</span>`, s: `Joined ${fmt(parse(f.start))}` };
+      const back = returnDate(f);
+      const left = daysBetween(t, back);
+      if (left > 0) return { f, rank: 1, sortKey: left, pill: `<span class="pill stop">Not yet</span>`, s: `Back from ${fmt(back)} · ${left} days` };
+      return { f, rank: 2, pill: `<span class="pill ok">Can go back</span>`, s: `Left ${fmt(parse(f.end))}` };
+    }).sort((a, b) => a.rank - b.rank || (a.sortKey || 0) - (b.sortKey || 0));
+    $("#cooldowns").innerHTML = rows.length ? rows.map(r => `
+      <div class="item"><div class="main"><div class="t">${esc(r.f.retailer)}</div><div class="s">${esc(r.s)}</div></div>${r.pill}</div>`).join("")
+      : `<div class="empty-line">Companies you've been with show here, with the date each one will take you back.</div>`;
+  }
+
+  function renderHistory(all) {
+    $("#history").innerHTML = all.length ? all.map(f => {
+      const bonus = (f.bonuses || []).reduce((s, b) => s + Number(b.amount || 0), 0);
+      const span = `${fmt(parse(f.start))} – ${f.end ? fmt(parse(f.end)) : "now"}`;
+      const months = f.end ? Math.max(0, Math.round(daysBetween(parse(f.start), parse(f.end)) / 30.44)) : null;
+      return `<div class="item" data-act="edit" data-id="${esc(f.id)}" role="button" tabindex="0">
+        <span class="dot ${f.end ? "" : "on"}"></span>
+        <div class="main"><div class="t">${esc(f.retailer)}</div><div class="s">${esc(span)}${months !== null ? ` · ${months} mo` : ""} · ${esc(f.fuel)}</div></div>
+        <span class="amt">${bonus ? money(bonus) : "–"}</span>
+      </div>`;
+    }).join("") : `<div class="empty-line">Each switch you make lands here, newest first.</div>`;
+  }
+
+  // ---------- form ----------
+  const dlg = $("#dlg"), form = $("#form");
+  let editing = null;   // id being edited
+  let flipFrom = null;  // id of the deal being left when using "I've flipped"
+  let delArmed = false;
+
+  function bonusRow(b = {}, type = null) {
+    const t = type || bonusType(b);
+    const fixed = TYPES.find(x => x.id === t);
+    const row = document.createElement("div");
+    row.className = "bonus-row";
+    row.dataset.id = b.id || uid();
+    row.dataset.type = t;
+    if (b.paidOn) row.dataset.paidOn = b.paidOn;
+    if (b.status === "paid") row.dataset.wasPaid = "1";
+    const srcVal = t === "cashback" ? (b.source && !/^cash ?back( site)?$/i.test(b.source) ? b.source : "") : t === "other" ? (b.source || "") : "";
+    row.innerHTML = `
+      <div class="slot-head"><i style="background:var(--t-${t})"></i>${esc(fixed ? fixed.name : "Other bonus")}<span class="note" style="font-weight:400">${fixed ? esc(fixed.hint) : ""}</span></div>
+      ${t === "cashback" || t === "other" ? `<input class="src" list="sources" placeholder="${t === "cashback" ? "Which site (ShopBack…)" : "Where from"}" aria-label="Bonus from" value="${esc(srcVal)}">` : `<span class="src" hidden></span>`}
+      <input class="amt-in" type="number" min="0" step="1" inputmode="decimal" placeholder="$ none" aria-label="${esc(fixed ? fixed.name : "Bonus")} amount in dollars" value="${esc(b.amount || "")}">
+      <select class="st" aria-label="Status">
+        <option value="pending">Not tracked yet</option><option value="tracked">Tracked</option><option value="paid">Paid</option>
+      </select>
+      <label class="days-in">Stay <input type="number" min="0" max="730" step="1" inputmode="numeric" placeholder="–" aria-label="Days you must stay for this bonus" value="${esc(b.stayDays || "")}"> days</label>
+      ${t === "cashback" ? `<label class="via"><input type="checkbox" class="via-in"${b.viaEconnex ? " checked" : ""}> The cashback site sent me through Econnex</label>` : ""}
+      ${fixed ? "<span></span>" : '<button type="button" aria-label="Remove bonus">✕</button>'}
+      <div class="links"></div>`;
+    row.querySelector(".st").value = b.status || "pending";
+    const rm = row.querySelector("button"); if (rm) rm.onclick = () => row.remove();
+    const links = () => {
+      const srcEl = row.querySelector("input.src");
+      const via = row.querySelector(".via-in");
+      const src = t === "retailer" ? "sign up bonus" : t === "econnex" ? "Econnex" : ((srcEl && srcEl.value) || (t === "cashback" ? "cashback" : "")) + (via && via.checked ? " Econnex" : "");
+      const html = termsLinks(src, $("#f-retailer").value);
+      row.querySelector(".links").innerHTML = html ? `Check the stay rule: ${html}` : "";
+    };
+    const srcEl = row.querySelector("input.src"); if (srcEl) srcEl.addEventListener("input", links);
+    const viaEl = row.querySelector(".via-in"); if (viaEl) viaEl.addEventListener("change", links);
+    row._links = links; links();
+    $("#bonus-rows").appendChild(row);
+  }
+  function fillBonusSlots(bonuses = []) {
+    $("#bonus-rows").innerHTML = "";
+    const left = bonuses.slice();
+    for (const t of TYPES) {
+      const mine = left.filter(b => bonusType(b) === t.id);
+      if (!mine.length) bonusRow({}, t.id);
+      for (const b of mine) { bonusRow(b, t.id); left.splice(left.indexOf(b), 1); }
+    }
+    for (const b of left) bonusRow(b, "other");
+  }
+
+  function openForm({ deal = null, from = null, past = false, kind = null, switching = false } = {}) {
+    editing = deal ? deal.id : null;
+    const d = deal ? { ...deal } : {};
+    if (switching) { d.start = toISO(today()); from = clashes({ ...d, considering: false })[0] || null; }
+    flipFrom = from ? from.id : null;
+    delArmed = false;
+    const k = switching ? "current" : kind || (deal ? (deal.considering ? "considering" : deal.end ? "past" : "current") : past ? "past" : "current");
+    $("#f-kind").value = k;
+    $("#form-title").textContent = switching ? `Switching to ${deal.retailer}` : deal ? "Edit deal" : from ? `Flipping from ${from.retailer}` : k === "considering" ? "Add a deal to compare" : past ? "Add a past deal" : "Add a deal";
+    $("#f-retailer").value = d.retailer || "";
+    $("#f-fuel").value = d.fuel || (from && from.fuel) || "Electricity";
+    $("#f-start").value = d.start || toISO(today());
+    $("#f-end").value = d.end || "";
+    $("#f-stay").value = d.stayMonths ?? 3;
+    $("#f-noreturn").value = d.noReturnMonths ?? 12;
+    $("#f-notes").value = d.notes || "";
+    const r = d.rates || {};
+    $("#r-supply").value = r.supply ?? ""; $("#r-peak").value = r.peak ?? ""; $("#r-off").value = r.off ?? ""; $("#r-fit").value = r.fit ?? "";
+    $("#bonus-rows").innerHTML = "";
+    fillBonusSlots(d.bonuses || []);
+    const del = $("#del-btn"); del.hidden = !deal; del.textContent = "Delete"; del.classList.remove("confirm-del");
+    $("#save-btn").textContent = from ? "Save new deal" : "Save";
+    kindChanged();
+    updateWarn();
+    updateEstimate();
+    dlg.showModal();
+    if (!deal) $("#f-retailer").focus();
+  }
+
+  function kindChanged() {
+    const k = $("#f-kind").value;
+    $("#f-end-field").hidden = k !== "past";
+    $("#f-start-label").textContent = k === "considering" ? "Would start on" : "Started on";
+    $("#f-start-hint").textContent = k === "considering" ? "Your best guess. Used to work out the stay dates." : "The day you were connected.";
+    updateWarn();
+  }
+  $("#f-kind").addEventListener("change", kindChanged);
+  $("#f-fuel").addEventListener("change", updateWarn);
+
+  function updateWarn() {
+    const msgs = [];
+    if ($("#f-kind").value === "current" && $("#f-start").value) {
+      const plan = planSave({ id: editing, retailer: $("#f-retailer").value, fuel: $("#f-fuel").value, start: $("#f-start").value, end: null, considering: false });
+      msgs.push(...plan.block.map(m => `<div class="warn stop">${m}</div>`), ...plan.notes.map(m => `<div class="warn">${m}</div>`));
+      $("#save-btn").disabled = plan.block.length > 0;
+    } else $("#save-btn").disabled = false;
+    const name = norm($("#f-retailer").value);
+    const start = parse($("#f-start").value);
+    if (name && start) {
+      for (const f of data()) {
+        if (f.id === editing || !f.end || norm(f.retailer) !== name) continue;
+        const back = returnDate(f);
+        if (back > start) msgs.push(`<div class="warn stop">You left ${esc(f.retailer)} on ${esc(fmt(parse(f.end)))}. They may not give you a new-customer bonus until ${esc(fmt(back))}.</div>`);
+      }
+    }
+    if (flipFrom && start && $("#f-kind").value === "current") {
+      const from = data().find(f => f.id === flipFrom);
+      if (from && freeDate(from) > start)
+        msgs.push(`<div class="warn">Heads up: your ${esc(from.retailer)} stay isn't done until ${esc(fmt(freeDate(from)))}. Leaving earlier could lose that bonus.</div>`);
+    }
+    $("#form-warn").innerHTML = msgs.join("");
+  }
+  ["#f-retailer", "#f-start"].forEach(s => $(s).addEventListener("input", updateWarn));
+  $("#f-retailer").addEventListener("input", () => document.querySelectorAll("#bonus-rows .bonus-row").forEach(r => r._links && r._links()));
+
+  const numOrNull = (id) => { const v = $(id).value; return v === "" ? null : Math.max(0, Number(v)); };
+  const formRates = () => ({ supply: numOrNull("#r-supply"), peak: numOrNull("#r-peak"), off: numOrNull("#r-off"), fit: numOrNull("#r-fit") });
+  function updateEstimate() {
+    const r = formRates(), el = $("#estimate");
+    if (!hasRates(r) || !$("#f-start").value) { el.innerHTML = ""; return; }
+    const draft = { start: $("#f-start").value, retailer: $("#f-retailer").value, stayMonths: Number($("#f-stay").value || 0),
+      bonuses: [...document.querySelectorAll("#bonus-rows .bonus-row")].map(row => ({ amount: Number(row.querySelector(".amt-in").value || 0), stayDays: Number(row.querySelector(".days-in input").value || 0) })) };
+    const d = dailyCost(r, use()), days = Math.max(1, daysBetween(parse(draft.start), freeDate(draft)));
+    const bonus = draft.bonuses.reduce((s, b) => s + b.amount, 0), stay = d.total * days;
+    el.innerHTML = `<div class="estimate">${hasUsage(use()) ? "With your usage" : "Supply only (add your usage on the main page)"}: <strong>${m2(d.total)}</strong>/day, <strong>${money(stay)}</strong> over the ${days}-day stay${bonus ? `, <strong>${money(stay - bonus)}</strong> after ${money(bonus)} in bonuses` : ""}.</div>`;
+  }
+  form.addEventListener("input", updateEstimate);
+
+  function readForm() {
+    const retailer = $("#f-retailer").value.trim();
+    const start = $("#f-start").value;
+    if (!retailer) { $("#f-retailer").focus(); return null; }
+    if (!start) { $("#f-start").focus(); return null; }
+    const kind = $("#f-kind").value;
+    if (kind === "past" && !$("#f-end").value) { $("#f-end").focus(); return null; }
+    const old = data().find(f => f.id === editing) || {};
+    const bonuses = [...document.querySelectorAll("#bonus-rows .bonus-row")].map(r => ({
+      id: r.dataset.id,
+      type: r.dataset.type,
+      viaEconnex: !!(r.querySelector(".via-in") && r.querySelector(".via-in").checked),
+      source: r.dataset.type === "retailer" ? "Retailer bonus" : r.dataset.type === "econnex" ? "Econnex" : ((r.querySelector("input.src") || {}).value || "").trim(),
+      amount: Number(r.querySelector(".amt-in").value || 0),
+      stayDays: Math.max(0, Number(r.querySelector(".days-in input").value || 0)),
+      status: r.querySelector(".st").value,
+      paidOn: r.querySelector(".st").value === "paid" ? (r.dataset.paidOn || (r.dataset.wasPaid ? null : toISO(today()))) : null,
+    })).filter(b => b.amount > 0 || (b.type === "other" && b.source));
+    return {
+      id: editing || uid(),
+      retailer, start,
+      fuel: $("#f-fuel").value,
+      end: kind === "past" ? $("#f-end").value : null,
+      considering: kind === "considering",
+      stayMonths: Math.max(0, Number($("#f-stay").value || 0)),
+      noReturnMonths: Math.max(0, Number($("#f-noreturn").value || 0)),
+      bonuses,
+      notes: $("#f-notes").value.trim(),
+      rates: formRates(),
+      createdAt: old.createdAt || new Date().toISOString(),
+    };
+  }
+
+  async function persist(f) {
+    if (example) { example = example.filter(x => x.id !== f.id).concat(f); render(); return; }
+    if (!store) return;
+    try { await store.save(f); } catch (e) { setSync(e && e.code === "quota_exceeded" ? "Storage is full" : "Couldn't save. Try again."); throw e; }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = readForm(); if (!f) return;
+    $("#save-btn").disabled = true;
+    try {
+      if (isCurrent(f)) {
+        const plan = planSave(f);
+        if (plan.block.length) { updateWarn(); return; }
+        for (const c of plan.toEnd) await persist({ ...c, end: f.start });
+        for (const x of plan.toRemove) {
+          if (example) example = example.filter(e => e.id !== x.id); else if (store) await store.remove(x.id);
+        }
+      }
+      await persist(f);
+      dlg.close();
+    } catch {} finally { $("#save-btn").disabled = false; }
+  });
+  $("#cancel-btn").onclick = () => dlg.close();
+  $("#add-bonus").onclick = () => bonusRow({}, "other");
+  $("#del-btn").onclick = async () => {
+    const b = $("#del-btn");
+    if (!delArmed) { delArmed = true; b.textContent = "Tap again to delete"; b.classList.add("confirm-del"); return; }
+    if (example) { example = example.filter(x => x.id !== editing); render(); }
+    else if (store) { try { await store.remove(editing); } catch { setSync("Couldn't delete. Try again."); } }
+    dlg.close();
+  };
+
+  // ---------- page actions ----------
+  document.addEventListener("click", async (e) => {
+    const t = e.target.closest("[data-act]"); if (!t) return;
+    const act = t.dataset.act, id = t.dataset.id;
+    const deal = id && data().find(f => f.id === id);
+    if (act === "add") openForm();
+    else if (act === "consider") openForm({ kind: "considering" });
+    else if (act === "switch" && deal) openForm({ deal, switching: true });
+    else if (act === "to-consider" && deal) { t.disabled = true; try { await persist({ ...deal, considering: true, end: null }); } catch { t.disabled = false; } }
+    else if (act === "example") { example = sampleData(); render(); window.scrollTo({ top: 0 }); }
+    else if (act === "edit" && deal) openForm({ deal });
+    else if (act === "flip" && deal) openForm({ from: deal });
+    else if (act === "paid" && deal) {
+      const bonuses = deal.bonuses.map(b => b.id === t.dataset.b ? { ...b, status: "paid", paidOn: toISO(today()) } : b);
+      t.disabled = true;
+      try { await persist({ ...deal, bonuses }); } catch { t.disabled = false; }
+    }
+  });
+  $("#history").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("[data-act]"); if (r) { e.preventDefault(); r.click(); } } });
+  $("#add-past").onclick = () => openForm({ past: true });
+  $("#exit-example").onclick = () => { example = null; render(); };
+
+  // ---------- usage ----------
+  function fillUsage() {
+    for (const [k, id] of [["peak", "#u-peak"], ["off", "#u-off"], ["exp", "#u-exp"]])
+      if (document.activeElement !== $(id)) $(id).value = use()[k] ?? "";
+  }
+  ["#u-peak", "#u-off", "#u-exp"].forEach(id => $(id).addEventListener("change", async () => {
+    const u = { peak: numOrNull("#u-peak"), off: numOrNull("#u-off"), exp: numOrNull("#u-exp") };
+    if (example) { example = null; }
+    if (!store) return;
+    try { await store.saveUsage(u); $("#usage-saved").textContent = "Saved"; setTimeout(() => $("#usage-saved").textContent = "", 1500); }
+    catch { $("#usage-saved").textContent = "Couldn't save"; }
+  }));
+
+  // ---------- backup ----------
+  const backupJSON = () => JSON.stringify({ app: "flip-my-bird", version: 1, exportedAt: new Date().toISOString(), flips: data(), usage: use() }, null, 2);
+  $("#dl-backup").onclick = async () => {
+    if (!dl) { setSync("Download isn't available here. Use Copy backup."); return; }
+    try { await dl.save({ filename: `flip-my-bird-${toISO(today())}.json`, data: new Blob([backupJSON()], { type: "application/json" }) }); }
+    catch (e) { if (e && e.code !== "declined") setSync("Download isn't available here. Use Copy backup."); }
+  };
+  $("#copy-backup").onclick = async () => {
+    const btn = $("#copy-backup");
+    try { await navigator.clipboard.writeText(backupJSON()); btn.textContent = "Copied"; }
+    catch {
+      $("#restore-text").value = backupJSON(); $("#restore-msg").textContent = "Select all of this text and copy it.";
+      $("#restore-dlg").showModal(); $("#restore-text").select();
+    }
+    setTimeout(() => { btn.textContent = "Copy backup"; }, 2000);
+  };
+  $("#restore-open").onclick = () => { $("#restore-text").value = ""; $("#restore-msg").textContent = ""; $("#restore-dlg").showModal(); };
+  $("#restore-cancel").onclick = () => $("#restore-dlg").close();
+  $("#restore-example").onclick = async () => {
+    try {
+      const r = await fetch("example-data.json");
+      if (!r.ok) throw 0;
+      $("#restore-text").value = await r.text();
+      $("#restore-msg").textContent = "Example loaded. Press Restore to add these made-up deals.";
+    } catch { $("#restore-msg").textContent = "Couldn't load the example file here. Open example-data.json and paste its text above."; }
+  };
+  $("#restore-file").onchange = (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const r = new FileReader(); r.onload = () => { $("#restore-text").value = r.result; }; r.readAsText(file);
+  };
+  $("#restore-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    let list;
+    try { const j = JSON.parse($("#restore-text").value); list = Array.isArray(j) ? j : j.flips; if (!Array.isArray(list)) throw 0; }
+    catch { $("#restore-msg").textContent = "That doesn't look like a Flip My Bird backup. Paste the whole thing, from { to }."; return; }
+    const clean = list.filter(f => f && f.retailer && f.start).map(f => ({
+      id: String(f.id || uid()).replace(/[^A-Za-z0-9_\-.~:@+]/g, "").slice(0, 60) || uid(),
+      retailer: String(f.retailer), start: String(f.start), end: f.end ? String(f.end) : null,
+      fuel: String(f.fuel || "Electricity"), stayMonths: Number(f.stayMonths ?? 3), noReturnMonths: Number(f.noReturnMonths ?? 12),
+      bonuses: Array.isArray(f.bonuses) ? f.bonuses.map(b => ({ id: String(b.id || uid()), source: String(b.source || ""), amount: Number(b.amount || 0), stayDays: Number(b.stayDays || 0), paidOn: b.paidOn ? String(b.paidOn) : null, type: bonusType(b), viaEconnex: !!b.viaEconnex, status: ["pending","tracked","paid"].includes(b.status) ? b.status : "pending" })) : [],
+      notes: String(f.notes || ""), considering: !!f.considering,
+      rates: f.rates && typeof f.rates === "object" ? { supply: f.rates.supply ?? null, peak: f.rates.peak ?? null, off: f.rates.off ?? null, fit: f.rates.fit ?? null } : null,
+      createdAt: f.createdAt || new Date().toISOString(),
+    }));
+    example = null;
+    try { const j = JSON.parse($("#restore-text").value); if (j && j.usage && store) await store.saveUsage({ peak: j.usage.peak ?? null, off: j.usage.off ?? null, exp: j.usage.exp ?? null }); } catch {}
+    try { for (const f of clean) await persist(f); $("#restore-dlg").close(); }
+    catch { $("#restore-msg").textContent = "Some deals couldn't be saved. Try again."; }
+  });
+
+  // ---------- example ----------
+  function sampleData() {
+    const t = today(), iso = (d) => toISO(d);
+    const s1 = addMonths(t, -14), e1 = addMonths(t, -10), e2 = addMonths(t, -5), s3 = addMonths(t, -5);
+    return [
+      { id: "ex1", retailer: "AGL", fuel: "Electricity", start: iso(s1), end: iso(e1), stayMonths: 3, noReturnMonths: 12,
+        bonuses: [{ id: "b1", source: "ShopBack", amount: 120, status: "paid" }], notes: "Example", createdAt: "" },
+      { id: "ex2", retailer: "Origin Energy", fuel: "Electricity", start: iso(e1), end: iso(e2), stayMonths: 3, noReturnMonths: 12,
+        bonuses: [{ id: "b2", source: "TopCashback", amount: 150, status: "paid" }, { id: "b3", source: "Retailer sign-up credit", amount: 50, status: "paid" }], notes: "Example", createdAt: "" },
+      { id: "ex3", retailer: "EnergyAustralia", fuel: "Electricity", start: iso(s3), end: iso(new Date(t.getFullYear(), t.getMonth(), t.getDate() - 80)), stayMonths: 2, noReturnMonths: 12,
+        bonuses: [{ id: "b4", source: "Econnex", amount: 100, status: "tracked", stayDays: 45 }], notes: "Example", createdAt: "" },
+      { id: "ex4", retailer: "Red Energy", fuel: "Electricity", start: iso(new Date(t.getFullYear(), t.getMonth(), t.getDate() - 80)), end: null, stayMonths: 3, noReturnMonths: 12,
+        bonuses: [{ id: "b5", source: "Econnex via ShopBack", amount: 140, status: "tracked", stayDays: 90 }], notes: "Example", rates: { supply: 1.35, peak: 38, off: 26, fit: 4 }, createdAt: "" },
+      { id: "ex5", retailer: "GloBird Energy", fuel: "Electricity", start: iso(addMonths(t, 0)), end: null, considering: true, stayMonths: 3, noReturnMonths: 12,
+        bonuses: [{ id: "b6", source: "Econnex", amount: 180, status: "pending", stayDays: 60 }], notes: "Example", rates: { supply: 1.10, peak: 40, off: 28, fit: 5 }, createdAt: "" },
+    ];
+  }
+
+  boot();
+})();
+</script>
