@@ -133,6 +133,14 @@ a bonus still "pending", otherwise "sit tight". The mascot's mood follows the co
 Chart colours were checked for colour blindness in both themes. Light and dark themes come from
 CSS custom properties on `:root`.
 
+## Screen sizes
+
+Checked from 280px wide to 1440px, portrait and landscape, on both tabs and in both dialogs:
+no sideways scroll, nothing off-screen or clipped, tap targets at least 28px. Rules live under
+"Screen sizes" in the stylesheet: block containers get `min-width: 0` so wide content (the table,
+the chart) scrolls inside its own box; hero type and the mascot scale with `clamp()`; under 340px
+form grids stack; from 900px the two tabs lay out in two columns.
+
 ## What's not done
 
 - **No reminders.** Nothing notifies the user when a stay ends or a bonus is overdue. This is the
