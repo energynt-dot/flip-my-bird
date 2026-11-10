@@ -50,6 +50,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); mar
 header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand h1 { font: 800 26px/1 var(--display); letter-spacing: -0.02em; margin: 0; }
+.tagline { font-size: 12px; color: var(--muted); margin-top: 3px; }
 .brand svg { width: 46px; height: 46px; flex: none; }
 .sync { font-size: 12px; color: var(--muted); }
 h2 { font: 700 13px/1.2 var(--body); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0; }
@@ -289,7 +290,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     <g class="crest"><path d="M70 24C71 10 63 0 53-1c6 6 7 14 6 25z" fill="#f6c3cf"/><path d="M62 25C59 10 48 3 39 6c8 4 10 11 11 22z" fill="#fbdbe3"/></g>
     <path d="M80 36c9 0 11 9 4 15 0-6-2-9-7-9z" fill="#f4ead9" stroke="#6c7780" stroke-width="1"/>
     <circle cx="69" cy="38" r="5.6" fill="#f08ea6"/><circle cx="69" cy="38" r="3.4" fill="#2a2f33"/><circle cx="70.2" cy="36.8" r="1.1" fill="#fff"/><g class="wing"><path d="M27 52c9-9 28-7 34 6-3 15-20 22-37 14 6-5 6-12 3-20z" fill="#9aa5ad"/><path d="M34 62c6 2 13 1 19-3M31 69c7 2 15 0 21-4" stroke="#6c7780" stroke-width="2" fill="none" stroke-linecap="round"/></g></svg>
-      <h1>Flip My Bird</h1>
+      <div><h1>Flip My Bird</h1><div class="tagline">Loyalty is for galahs.</div></div>
     </div>
     <span class="sync" id="sync">Loading…</span>
   </header>
@@ -1005,6 +1006,19 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     { at: 10000, kind: "griffin",     name: "Griffin",     tier: 4, lore: "Guardian of the hoard. Ten grand, and the hoard is yours." },
     { at: 15000, kind: "phoenix",     name: "Phoenix",     tier: 5, lore: "Reborn with every flip. There is no higher bird." },
   ];
+  const CHEERS = {
+    galah: "You hatched! Now stop mucking around.",
+    dodo: "Still here. Extinction can wait.",
+    binchicken: "Beak's wet. No deal is safe from you now.",
+    moa: "Too big to ignore. Retailers are getting nervous.",
+    thunderbird: "A grand. The power lines tremble.",
+    roc: "Two grand. Mind the elephants.",
+    firebird: "You're on fire. In the good way.",
+    simurgh: "Five grand. Ancient, wise, and still switching.",
+    garuda: "You ride the wind now.",
+    griffin: "Ten grand. Guard that hoard.",
+    phoenix: "Burn the bill. Rise again. Repeat.",
+  };
   const rankFor = (recv) => { let i = 0; RANKS.forEach((r, k) => { if (recv >= r.at) i = k; }); return i; };
   const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][n] || n;
 
@@ -1099,19 +1113,19 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     for (const f of live) for (const b of (f.bonuses || [])) {
       if (b.status === "paid" || !Number(b.amount)) continue;
       const due = Number(b.stayDays) > 0 ? addDays(parse(f.start), b.stayDays) : addMonths(parse(f.start), f.stayMonths || 0);
-      if (daysBetween(due, t) > 14) return { txt: `<strong>${money(b.amount)}</strong> from ${esc(bonusLabel(b))} for ${esc(f.retailer)} was due ${esc(rel(due))}. Chase it, then tap Paid.`, act: `<a href="#details">Go to bonuses</a>` };
+      if (daysBetween(due, t) > 14) return { txt: `<strong>${money(b.amount)}</strong> from ${esc(bonusLabel(b))} for ${esc(f.retailer)} was due ${esc(rel(due))}. Go squawk at them, then tap Paid.`, act: `<a href="#details">Go to bonuses</a>` };
     }
     if (!current.length) return { txt: `Your last deal has ended. Who are you with now?`, act: `<button class="ghost" data-act="add">Add current deal</button>` };
     const f = current[0], free = freeDate(f), left = daysBetween(t, free);
     const idea = ideas.find(i => fuelsOverlap(i.fuel, f.fuel));
     if (left <= 0) {
-      if (idea) return { txt: `You're free. <strong>${esc(idea.retailer)}</strong> is waiting in your list. Sign up, then tap "I've switched to this".`, act: "" };
-      return { txt: `Your stay's over. Find the next bonus and add it to compare.`, act: `<button class="ghost" data-act="consider">Add a deal to compare</button>` };
+      if (idea) return { txt: `Cage door's open. <strong>${esc(idea.retailer)}</strong> is waiting in your list. Sign up, then tap "I've switched to this".`, act: "" };
+      return { txt: `Cage door's open. Go find the next shiny bonus and add it to compare.`, act: `<button class="ghost" data-act="consider">Add a deal to compare</button>` };
     }
-    if (left <= 14) return { txt: `<strong>${left} days</strong> to go. Start looking at offers now, so you can flip the day you're free.`, act: idea ? "" : `<button class="ghost" data-act="consider">Add a deal to compare</button>` };
+    if (left <= 14) return { txt: `Feathers ruffled: <strong>${left} days</strong> to go. Start sniffing out the next deal, so you can flip the day you're free.`, act: idea ? "" : `<button class="ghost" data-act="consider">Add a deal to compare</button>` };
     const unknown = (f.bonuses || []).filter(b => Number(b.amount) > 0 && b.status === "pending");
     if (unknown.length) return { txt: `Nothing to flip yet. Check that <strong>${esc(bonusLabel(unknown[0]))}</strong> is tracking, then set it to Tracked.`, act: `<button class="ghost" data-act="edit" data-id="${esc(f.id)}">Edit deal</button>` };
-    return { txt: `Nothing to do. Sit tight, you can flip ${esc(rel(free))}.`, act: "" };
+    return { txt: `Nothing to do. Even bin chickens nap. You can flip ${esc(rel(free))}.`, act: "" };
   }
 
   let lastRank = null, dataReady = false;  // don't judge rank until real data has loaded
@@ -1144,7 +1158,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     if (!example && dataReady) {
       let stored = null; try { stored = JSON.parse(localStorage.getItem(LS_KEY + ".rankAt")); } catch {}
       const prev = lastRank !== null ? lastRank : stored;
-      if (prev !== null && r.at > prev) celebrate(`You've hatched into a <strong>${esc(r.name)}</strong>!`, `${money(recv)} received. ${esc(r.lore)}`);
+      if (prev !== null && r.at > prev) celebrate(`You've hatched into a <strong>${esc(r.name)}</strong>!`, `${money(recv)} received. ${esc(CHEERS[r.kind] || r.lore)}`);
       lastRank = r.at; try { localStorage.setItem(LS_KEY + ".rankAt", JSON.stringify(r.at)); } catch {}
     }
   }
@@ -1441,7 +1455,11 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     else if (act === "paid" && deal) {
       const bonuses = deal.bonuses.map(b => b.id === t.dataset.b ? { ...b, status: "paid", paidOn: toISO(today()) } : b);
       t.disabled = true;
-      try { await persist({ ...deal, bonuses }); } catch { t.disabled = false; }
+      const before = lastRank;
+      try {
+        await persist({ ...deal, bonuses });
+        setTimeout(() => { if (lastRank === before && !document.querySelector(".toast")) { const b = deal.bonuses.find(x => x.id === t.dataset.b); celebrate("Ka-ching!", `${money(b ? b.amount : 0)} in. Another shiny thing for the nest.`); } }, 400);
+      } catch { t.disabled = false; }
     }
   });
   $("#history").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("[data-act]"); if (r) { e.preventDefault(); r.click(); } } });
