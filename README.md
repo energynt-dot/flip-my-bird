@@ -44,8 +44,8 @@ an empty app.
 
 Money you've actually received hatches you up a ladder of birds, and the bird on the front page
 changes as you climb: Egg, Galah ($10), Dodo ($50), Bin Chicken ($250), Moa ($500), Thunderbird ($1,000),
-Roc ($2,000), Firebird ($3,500), Simurgh ($5,000), Garuda ($7,500), Griffin ($10,000) and
-Phoenix ($15,000). Each one sleeps mid-stay, wakes when you're two weeks out, and flies when
+Roc ($1,500), Firebird ($2,000), Simurgh ($3,000), Garuda ($4,000), Griffin ($5,000) and
+Phoenix ($6,000). Each one sleeps mid-stay, wakes when you're two weeks out, and flies when
 you're free to flip. "See all the birds" shows the whole ladder, with the ones you haven't
 hatched greyed out.
 

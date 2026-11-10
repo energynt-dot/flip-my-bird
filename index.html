@@ -1107,12 +1107,12 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     { at: 250,   kind: "binchicken",  name: "Bin Chicken", tier: 1, lore: "Now you're getting your beak wet. All that rummaging is paying off." },
     { at: 500,   kind: "moa",         name: "Moa",         tier: 1, lore: "Three metres tall. The retailers can see you coming." },
     { at: 1000,  kind: "thunderbird", name: "Thunderbird", tier: 2, lore: "A grand in the nest. Your wingbeats rattle the power lines." },
-    { at: 2000,  kind: "roc",         name: "Roc",         tier: 2, lore: "Big enough to carry off an elephant, or a quarterly bill." },
-    { at: 3500,  kind: "firebird",    name: "Firebird",    tier: 3, lore: "You glow in the dark and pay your own supply charge." },
-    { at: 5000,  kind: "simurgh",     name: "Simurgh",     tier: 3, lore: "Seen the world end three times. Still gets the sign-up bonus." },
-    { at: 7500,  kind: "garuda",      name: "Garuda",      tier: 4, lore: "You ride the wind. Loyalty offers bounce off your feathers." },
-    { at: 10000, kind: "griffin",     name: "Griffin",     tier: 4, lore: "Guardian of the hoard. Ten grand, and the hoard is yours." },
-    { at: 15000, kind: "phoenix",     name: "Phoenix",     tier: 5, lore: "Reborn with every flip. There is no higher bird." },
+    { at: 1500, kind: "roc",         name: "Roc",         tier: 2, lore: "Big enough to carry off an elephant, or a quarterly bill." },
+    { at: 2000, kind: "firebird",    name: "Firebird",    tier: 3, lore: "You glow in the dark and pay your own supply charge." },
+    { at: 3000, kind: "simurgh",     name: "Simurgh",     tier: 3, lore: "Seen the world end three times. Still gets the sign-up bonus." },
+    { at: 4000, kind: "garuda",      name: "Garuda",      tier: 4, lore: "You ride the wind. Loyalty offers bounce off your feathers." },
+    { at: 5000, kind: "griffin",     name: "Griffin",     tier: 4, lore: "Guardian of the hoard. Five grand, and the hoard is yours." },
+    { at: 6000, kind: "phoenix",     name: "Phoenix",     tier: 5, lore: "Reborn with every flip. There is no higher bird." },
   ];
   const CHEERS = {
     galah: "You hatched! Now stop mucking around.",
@@ -1120,12 +1120,12 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     binchicken: "Beak's wet. No deal is safe from you now.",
     moa: "Too big to ignore. Retailers are getting nervous.",
     thunderbird: "A grand. The power lines tremble.",
-    roc: "Two grand. Mind the elephants.",
+    roc: "Fifteen hundred. Mind the elephants.",
     firebird: "You're on fire. In the good way.",
-    simurgh: "Five grand. Ancient, wise, and still switching.",
+    simurgh: "Three grand. Ancient, wise, and still switching.",
     garuda: "You ride the wind now.",
-    griffin: "Ten grand. Guard that hoard.",
-    phoenix: "Burn the bill. Rise again. Repeat.",
+    griffin: "Five grand. Guard that hoard.",
+    phoenix: "Six grand. Burn the bill. Rise again. Repeat.",
   };
   const rankFor = (recv) => { let i = 0; RANKS.forEach((r, k) => { if (recv >= r.at) i = k; }); return i; };
   const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][n] || n;
