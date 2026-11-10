@@ -111,6 +111,9 @@ between any of these as JSON (`{ app, version, flips, usage }`, the same shape a
 ## Ranks and the "what's next" line
 
 `RANKS` (in `index.html`) is the bird ladder, keyed on money **received** (paid bonuses only).
+Each rank has a `kind` drawn by `bird(mood, kind)`: one SVG skeleton whose parts and colours come
+from the `BIRDS` table (beak, crest and tail variants), plus a separate egg. The app logo and icons
+use the `galah` kind.
 `rankFor()` picks the rank; a rise since the last visit (stored in `localStorage` under
 `flip-my-bird.v1.rank`) shows a toast and confetti. `nextStep()` builds the one-line suggestion at
 the top of the page in priority order: overdue bonus, no current deal, free to flip, two weeks out,
