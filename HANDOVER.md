@@ -115,7 +115,7 @@ Each rank has a `kind` drawn by `bird(mood, kind)`: one SVG skeleton whose parts
 from the `BIRDS` table (beak, crest and tail variants), plus a separate egg. The app logo and icons
 use the `galah` kind.
 `rankFor()` picks the rank; a rise since the last visit (stored in `localStorage` under
-`flip-my-bird.v1.rank`) shows a toast and confetti. `nextStep()` builds the one-line suggestion at
+`flip-my-bird.v1.rankAt`, as the rank's dollar threshold) shows a toast and confetti. `nextStep()` builds the one-line suggestion at
 the top of the page in priority order: overdue bonus, no current deal, free to flip, two weeks out,
 a bonus still "pending", otherwise "sit tight". The mascot's mood follows the countdown
 (asleep, awake under two weeks, flying when free).

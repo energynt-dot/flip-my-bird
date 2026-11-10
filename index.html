@@ -993,7 +993,8 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
   // Rank is earned on money actually received. Tier = medal colour.
   const RANKS = [
     { at: 0,     kind: "egg",         name: "Egg",         tier: 0, lore: "Nothing's hatched yet. Your first bonus cracks the shell." },
-    { at: 50,    kind: "dodo",        name: "Dodo",        tier: 1, lore: "You've hatched. Will you survive extinction?" },
+    { at: 10,    kind: "galah",       name: "Galah",       tier: 1, lore: "Notorious for goofing around and not doing much. Still, it's a start." },
+    { at: 50,    kind: "dodo",        name: "Dodo",        tier: 1, lore: "Off the mark. Will you survive extinction?" },
     { at: 250,   kind: "binchicken",  name: "Bin Chicken", tier: 1, lore: "Now you're getting your beak wet. All that rummaging is paying off." },
     { at: 500,   kind: "moa",         name: "Moa",         tier: 1, lore: "Three metres tall. The retailers can see you coming." },
     { at: 1000,  kind: "thunderbird", name: "Thunderbird", tier: 2, lore: "A grand in the nest. Your wingbeats rattle the power lines." },
@@ -1005,7 +1006,7 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
     { at: 15000, kind: "phoenix",     name: "Phoenix",     tier: 5, lore: "Reborn with every flip. There is no higher bird." },
   ];
   const rankFor = (recv) => { let i = 0; RANKS.forEach((r, k) => { if (recv >= r.at) i = k; }); return i; };
-  const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][n] || n;
+  const roman = (n) => ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][n] || n;
 
   // Plain-English dates for the hero.
   function rel(d) {
@@ -1141,10 +1142,10 @@ textarea.backup { font: 12px var(--mono); min-height: 120px; }
       </div>`;
     // Rank-up: celebrate when the rank rises during this visit or since last visit.
     if (!example && dataReady) {
-      let stored = null; try { stored = JSON.parse(localStorage.getItem(LS_KEY + ".rank")); } catch {}
+      let stored = null; try { stored = JSON.parse(localStorage.getItem(LS_KEY + ".rankAt")); } catch {}
       const prev = lastRank !== null ? lastRank : stored;
-      if (prev !== null && ri > prev) celebrate(`You've hatched into a <strong>${esc(r.name)}</strong>!`, `${money(recv)} received. ${esc(r.lore)}`);
-      lastRank = ri; try { localStorage.setItem(LS_KEY + ".rank", JSON.stringify(ri)); } catch {}
+      if (prev !== null && r.at > prev) celebrate(`You've hatched into a <strong>${esc(r.name)}</strong>!`, `${money(recv)} received. ${esc(r.lore)}`);
+      lastRank = r.at; try { localStorage.setItem(LS_KEY + ".rankAt", JSON.stringify(r.at)); } catch {}
     }
   }
 
