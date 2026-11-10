@@ -45,3 +45,11 @@ an empty app.
 Money you've actually received hatches you up a ladder of legendary birds, from the Bin Chicken ($10)
 through the Dodo, Moa, Thunderbird, Roc, Firebird, Simurgh, Garuda and Griffin to the Phoenix ($10,000).
 The front page shows your bird, how far to the next one, and a one-line "what to do next".
+
+## Install it like an app
+
+Open https://energynt-dot.github.io/flip-my-bird/ in Chrome on Android, tap the **⋮** menu, then
+**Add to Home screen** (or **Install app**). On iPhone, use Safari's **Share → Add to Home Screen**.
+It then opens full-screen from its own icon and works with no connection. `manifest.webmanifest`,
+`sw.js` and `icons/` provide this; they are also what a Play Store wrapper (PWABuilder / Trusted Web
+Activity) needs.
