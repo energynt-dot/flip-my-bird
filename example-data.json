@@ -63,7 +63,7 @@
       "rates": { "supply": 1.35, "peak": 38, "off": 26, "fit": 4 },
       "bonuses": [
         { "id": "ex-red-r", "type": "retailer", "source": "Retailer bonus", "amount": 50, "status": "pending", "stayDays": 0 },
-        { "id": "ex-red-c", "type": "cashback", "source": "Cashrewards", "viaEconnex": false, "amount": 140, "status": "tracked", "stayDays": 90 }
+        { "id": "ex-red-c", "type": "cashback", "source": "ShopBack", "viaEconnex": false, "amount": 140, "status": "tracked", "stayDays": 90 }
       ],
       "notes": "Example"
     },

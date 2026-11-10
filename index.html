@@ -449,7 +449,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
       <ul class="plain">
         <li><span class="chip"><i style="background:var(--t-retailer)"></i>Retailer bonus</span> A credit from the energy company itself for signing up.</li>
         <li><span class="chip"><i style="background:var(--t-econnex)"></i>Econnex</span> A reward for switching through the Econnex comparison site.</li>
-        <li><span class="chip"><i style="background:var(--t-cashback)"></i>Cashback site</span> Money from ShopBack, TopCashback or Cashrewards. They often send you through Econnex, but the cashback site is the one that pays, and it often pays more.</li>
+        <li><span class="chip"><i style="background:var(--t-cashback)"></i>Cashback site</span> Money from ShopBack or TopCashback. They often send you through Econnex, but the cashback site is the one that pays, and it often pays more.</li>
       </ul>
       <p>Each bonus has its own rule for how long you must stay. The app waits for whichever ends last, so you don't have to work it out.</p>
     </div>
@@ -595,7 +595,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
 </datalist>
 <datalist id="sources">
   <option>ShopBack</option><option>TopCashback</option><option>Econnex</option><option>Retailer sign-up credit</option>
-  <option>Referral</option><option>Cashrewards</option><option>Compare the Market</option><option>iSelect</option>
+  <option>Referral</option><option>Compare the Market</option><option>iSelect</option>
 </datalist>
 
 <script>
@@ -637,7 +637,6 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     econnex: "https://www.econnex.com.au/",
     shopback: "https://www.shopback.com.au/",
     topcashback: "https://www.topcashback.com.au/",
-    cashrewards: "https://www.cashrewards.com.au/",
   };
   function termsLinks(source, retailer) {
     const src = String(source || "").trim(); if (!src) return "";
@@ -645,7 +644,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     const sites = Object.keys(SITES).filter(k => key.includes(k));
     const q = (extra) => encodeURIComponent(`${src} ${retailer || ""} ${extra}`.replace(/\s+/g, " ").trim());
     const out = [];
-    const names = { econnex: "Econnex", shopback: "ShopBack", topcashback: "TopCashback", cashrewards: "Cashrewards" };
+    const names = { econnex: "Econnex", shopback: "ShopBack", topcashback: "TopCashback" };
     for (const k of sites) out.push(`<a href="${SITES[k]}" target="_blank" rel="noopener">${names[k]} site</a>`);
     out.push(`<a href="https://www.ozbargain.com.au/search/node/${q("")}" target="_blank" rel="noopener">OzBargain posts</a>`);
     out.push(`<a href="https://www.google.com/search?q=${q("cashback terms conditions stay days")}" target="_blank" rel="noopener">Search the terms</a>`);
