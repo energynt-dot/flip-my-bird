@@ -128,6 +128,8 @@ textarea { min-height: 64px; resize: vertical; }
 .bonus-row > button { padding: 8px 10px; }
 .days-in { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 0; }
 .days-in input { width: 4.5em; flex: 1 1 auto; text-align: center; }
+.exp-in { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 0; }
+.exp-in input { flex: 1 1 auto; min-width: 0; }
 .bonus-row .links { grid-column: 1 / -1; font-size: 12px; color: var(--muted); display: flex; gap: 4px 12px; flex-wrap: wrap; }
 a { color: var(--accent); }
 .links a { font-weight: 600; text-decoration: none; }
@@ -462,6 +464,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
         <li><strong>Stay rule.</strong> How long you must stay to keep a bonus. Leave early and you may lose it.</li>
         <li><strong>Can't come back for.</strong> After you leave, how long before that company treats you as a new customer again. Often 12 months.</li>
         <li><strong>Tracked.</strong> The cashback site has seen your sign-up. Not paid yet.</li>
+        <li><strong>Expected by.</strong> When the cashback site says it will pay. Often about 6 months after you sign up, long after your stay is done.</li>
         <li><strong>Supply charge.</strong> What you pay per day just to be connected. With solar, it's most of your bill.</li>
         <li><strong>Feed-in.</strong> What they pay you for the solar you send out.</li>
         <li><strong>Considering.</strong> A deal you're thinking about. It doesn't count until you switch.</li>
@@ -551,7 +554,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     </div>
     <div class="field">
       <label>Bonuses for this deal</label>
-      <span class="hint">Check all three for every flip: the energy company, Econnex and a cashback site. Leave the amount blank if there isn't one. Each can have its own stay rule, and your countdown waits for whichever ends last.</span>
+      <span class="hint">Check all three for every flip: the energy company, Econnex and a cashback site. Leave the amount blank if there isn't one. "Stay days" is how long you must stay to keep it. "Expected by" is when the site says it will pay, often about 6 months later.</span>
       <div id="bonus-rows" style="display:grid;gap:8px"></div>
       <div><button type="button" class="small" id="add-bonus">+ Another bonus</button></div>
     </div>
@@ -958,6 +961,17 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
 
   // When each bonus lands: paid ones on the day they were paid (or the deal's start),
   // the rest once their stay rule is met (or today, if that date has passed).
+  // When a bonus should land. The stay rule is how long you must STAY; the money comes later.
+  // Use the date the cashback site gives ("expected by") if entered. Otherwise guess:
+  // cashback sites and Econnex pay about 6 months after you sign up; a retailer credit
+  // arrives around the end of its stay rule.
+  function expectedDate(f, b) {
+    if (b.expectedBy) { const d = parse(b.expectedBy); if (d) return { date: d, guess: false }; }
+    const start = parse(f.start), t = bonusType(b);
+    if (t === "cashback" || t === "econnex") return { date: addMonths(start, 6), guess: true };
+    return { date: Number(b.stayDays) > 0 ? addDays(start, b.stayDays) : addMonths(start, f.stayMonths || 0), guess: true };
+  }
+
   function bonusEvents(all) {
     const t = today(), out = [];
     for (const f of all) {
@@ -969,7 +983,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
         else if (b.status === "paid") { kind = "recv"; date = parse(b.paidOn) || start; }
         else { kind = "owed"; }
         if (!date) {
-          date = Number(b.stayDays) > 0 ? addDays(start, b.stayDays) : addMonths(start, f.stayMonths || 0);
+          date = expectedDate(f, b).date;
           if (date < t) date = t;
         }
         out.push({ kind, date, amount, type: bonusType(b), source: bonusLabel(b), retailer: f.retailer });
@@ -1219,7 +1233,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     // Overdue money first.
     for (const f of live) for (const b of (f.bonuses || [])) {
       if (b.status === "paid" || !Number(b.amount)) continue;
-      const due = Number(b.stayDays) > 0 ? addDays(parse(f.start), b.stayDays) : addMonths(parse(f.start), f.stayMonths || 0);
+      const due = expectedDate(f, b).date;
       if (daysBetween(due, t) > 14) return { txt: `<strong>${money(b.amount)}</strong> from ${esc(bonusLabel(b))} for ${esc(f.retailer)} was due ${esc(rel(due))}. Go squawk at them, then tap Paid.`, act: `<a href="#details">Go to bonuses</a>` };
     }
     if (!current.length) return { txt: `Your last deal has ended. Who are you with now?`, act: `<button class="ghost" data-act="add">Add current deal</button>` };
@@ -1313,7 +1327,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
     $("#pending-list").innerHTML = rows.length ? rows.map(({ f, b }) => `
       <div class="item">
         <div class="main"><div class="t"><span class="chip" style="padding:0;background:none"><i style="background:var(--t-${bonusType(b)})"></i>${esc(bonusLabel(b))}</span></div>
-          <div class="s">${esc(f.retailer)} · ${esc(label[b.status] || "Waiting")}${Number(b.stayDays) > 0 ? ` · stay until ${esc(fmt(addDays(parse(f.start), b.stayDays)))}` : ""}</div></div>
+          <div class="s">${esc(f.retailer)} · ${esc(label[b.status] || "Waiting")}${(() => { const e = expectedDate(f, b); return ` · expected ${e.guess ? "around" : "by"} ${esc(fmt(e.date))}`; })()}</div></div>
         <span class="amt">${money(b.amount)}</span>
         <button class="small" data-act="paid" data-id="${esc(f.id)}" data-b="${esc(b.id)}">Paid</button>
       </div>`).join("")
@@ -1377,6 +1391,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
         <option value="pending">Not tracked yet</option><option value="tracked">Tracked</option><option value="paid">Paid</option>
       </select>
       <label class="days-in">Stay <input type="number" min="0" max="730" step="1" inputmode="numeric" placeholder="–" aria-label="Days you must stay for this bonus" value="${esc(b.stayDays || "")}"> days</label>
+      <label class="exp-in">Expected by <input type="date" class="exp-date" aria-label="Date this bonus is expected to be paid" value="${esc(b.expectedBy || "")}"></label>
       ${t === "cashback" ? `<label class="via"><input type="checkbox" class="via-in"${b.viaEconnex ? " checked" : ""}> The cashback site sent me through Econnex</label>` : ""}
       ${fixed ? "<span></span>" : '<button type="button" aria-label="Remove bonus">✕</button>'}
       <div class="links"></div>`;
@@ -1498,6 +1513,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
       source: r.dataset.type === "retailer" ? "Retailer bonus" : r.dataset.type === "econnex" ? "Econnex" : ((r.querySelector("input.src") || {}).value || "").trim(),
       amount: Number(r.querySelector(".amt-in").value || 0),
       stayDays: Math.max(0, Number(r.querySelector(".days-in input").value || 0)),
+      expectedBy: r.querySelector(".exp-date").value || null,
       status: r.querySelector(".st").value,
       paidOn: r.querySelector(".st").value === "paid" ? (r.dataset.paidOn || (r.dataset.wasPaid ? null : toISO(today()))) : null,
     })).filter(b => b.amount > 0 || (b.type === "other" && b.source));
@@ -1627,7 +1643,7 @@ dialog { overflow-y: auto; overscroll-behavior: contain; }
       id: String(f.id || uid()).replace(/[^A-Za-z0-9_\-.~:@+]/g, "").slice(0, 60) || uid(),
       retailer: String(f.retailer), start: String(f.start), end: f.end ? String(f.end) : null,
       fuel: String(f.fuel || "Electricity"), stayMonths: Number(f.stayMonths ?? 3), noReturnMonths: Number(f.noReturnMonths ?? 12),
-      bonuses: Array.isArray(f.bonuses) ? f.bonuses.map(b => ({ id: String(b.id || uid()), source: String(b.source || ""), amount: Number(b.amount || 0), stayDays: Number(b.stayDays || 0), paidOn: b.paidOn ? String(b.paidOn) : null, type: bonusType(b), viaEconnex: !!b.viaEconnex, status: ["pending","tracked","paid"].includes(b.status) ? b.status : "pending" })) : [],
+      bonuses: Array.isArray(f.bonuses) ? f.bonuses.map(b => ({ id: String(b.id || uid()), source: String(b.source || ""), amount: Number(b.amount || 0), stayDays: Number(b.stayDays || 0), expectedBy: b.expectedBy ? String(b.expectedBy) : null, paidOn: b.paidOn ? String(b.paidOn) : null, type: bonusType(b), viaEconnex: !!b.viaEconnex, status: ["pending","tracked","paid"].includes(b.status) ? b.status : "pending" })) : [],
       notes: String(f.notes || ""), considering: !!f.considering,
       rates: f.rates && typeof f.rates === "object" ? { supply: f.rates.supply ?? null, peak: f.rates.peak ?? null, off: f.rates.off ?? null, fit: f.rates.fit ?? null } : null,
       createdAt: f.createdAt || new Date().toISOString(),

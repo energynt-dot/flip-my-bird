@@ -57,6 +57,7 @@ One **deal** (called a "flip" in the code) per retailer sign-up:
     viaEconnex: true,               // cashback site that routes through Econnex (still paid by the site)
     status: "pending" | "tracked" | "paid",
     stayDays: 45,                   // this bonus's own stay rule, 0 = none
+    expectedBy: "2027-02-28" | null,// payout date the site quotes; null = guessed (see below)
     paidOn: "2026-11-20" | null     // set when marked paid
   }],
   notes: "", createdAt: "ISO timestamp"
@@ -88,8 +89,10 @@ These are the parts that are easy to get wrong. Each is a small pure function in
 - **Cost model** (`dailyCost`): `supply + (peak × peakKWh + off × offKWh − fit × exportKWh) / 100`
   dollars a day. "Over the stay" multiplies by the days to `freeDate`; "really costs you"
   subtracts all the deal's bonuses.
-- **When a bonus lands on the chart** (`bonusEvents`): paid bonuses on `paidOn`, or the deal start
-  if that's missing. Unpaid ones on their stay-rule date, or today if that has passed.
+- **When a bonus lands** (`expectedDate`, `bonusEvents`): the stay rule is how long you must
+  stay, not when the money arrives. Paid bonuses sit on `paidOn` (or the deal start). Unpaid ones
+  sit on `expectedBy` if entered; otherwise a guess: start + 6 months for cashback and Econnex,
+  the stay-rule date for retailer credits. A bonus is overdue 14 days after that date.
   Bonuses on "considering" deals count as planned.
 
 ## Storage
