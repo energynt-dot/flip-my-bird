@@ -1,6 +1,6 @@
 // Flip My Bird service worker: lets the app open with no connection.
 // Pages are fetched fresh when online (so updates show) and from the cache when offline.
-const CACHE = "fmb-v7";
+const CACHE = "fmb-v8";
 const FILES = ["./", "index.html", "manifest.webmanifest", "example-data.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
